@@ -7,8 +7,12 @@ for (var ue of document.getElementsByClassName("ue")) {
         while (tmp != null && tmp.className == "eval") {
             var mark = parseFloat(tmp.getElementsByClassName("number")[0].innerText);
             var coeff = parseFloat(tmp.getElementsByClassName("number")[1].innerText);
-            avg += mark * coeff;
-            coeffs += coeff;
+            
+            if (!isNaN(mark) && !isNaN(coeff)) {
+                avg += mark * coeff;
+                coeffs += coeff;
+            }
+
             tmp = tmp.nextSibling;
         }
 
