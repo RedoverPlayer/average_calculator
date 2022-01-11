@@ -1,7 +1,8 @@
 {
-  "name": "Average Calculator",
+  "name": "IUT Average Mark Calculator",
   "version": "1.0",
-  "description": "Calculates your average marks",
+  "manifest_version": 3,
+  "description": "Calculates your average marks on the IUT website.",
   "content_scripts": [
     {
       "matches": [
@@ -10,14 +11,10 @@
       "js": ["content.js"]
     }
   ],
-  "manifest_version": 2,
-  "browser_action": {
+  "action": {
     "default_icon": "icon.png",
     "default_title": "Click here to open the menu",
     "default_popup": "popup.html"
   },
-  "permissions": [
-    "activeTab",
-    "storage"
-  ]
+  "permissions": []
 }
