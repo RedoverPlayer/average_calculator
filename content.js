@@ -1,70 +1,44 @@
-// Calculates average
-for (var ue of document.getElementsByClassName("ue")) {
-    // Calculate average of each module
-    for (var module of document.getElementsByClassName("module")) {
-        var tmp = module.nextSibling;
-        var avg = 0;
+function calculateAverage() {
+    // gets the shadowRoot of the body (yes marks are in there idk why but they are)
+    var root = document.querySelector("releve-but").shadowRoot;
+
+    var modulesMarks = 0.0;
+    var modulesCoeffs = 0.0;
+
+    // Iterates over all modules
+    for (var module of root.querySelectorAll('div[id*="Module_"]')) {
+        var marks = 0;
         var coeffs = 0;
 
-        while (tmp != null && tmp.className == "eval") {
-            var mark = parseFloat(tmp.getElementsByClassName("number")[0].innerText);
-            var coeff = parseFloat(tmp.getElementsByClassName("number")[1].innerText);
-            
-            // verifies that the mark is ok
+        // Iterates over all evaluations of the module
+        for (var eval of module.getElementsByClassName("eval")) {
+            // Text inside eval div
+            var data = eval.querySelectorAll("div")[1].innerText.split("\n");
+
+            var mark = parseFloat(data[0].trim());
+            var coeff = parseFloat(data[1].replace("Coef.", "").trim());
+
+            // Verifies if a mark is valid
             if (!isNaN(mark) && !isNaN(coeff)) {
-                avg += mark * coeff;
+                marks += mark * coeff;
                 coeffs += coeff;
             }
-
-            tmp = tmp.nextSibling;
         }
 
-        avg /= coeffs
-        avg = Math.round(avg * 100) / 100;
+        // Adds the module's average to the total (for the general average)
+        modulesMarks += marks;
+        modulesCoeffs += coeffs;
 
-        if (!isNaN(avg)) {
-            module.querySelectorAll("td")[3].innerText = avg;
+        // Displays the average of the current module
+        if (!module.querySelector('div[class="module"]').innerHTML.includes("average_calculator")) {
+            module.querySelector('div[class="module"]').innerHTML += '<div class="average_calculator" style="display: block !important">' + (marks / coeffs).toFixed(2) + "</div>";
         }
     }
 
-    // Calculates the average of each UE
-    var tmp = ue.nextSibling;
-    var avg = 0;
-    var coeffs = 0;
-
-    while (tmp != null && tmp.className != "ue") {
-        if (tmp.className == "module" && tmp.querySelectorAll("td")[3].innerText.trim() != "") {
-            var mark = parseFloat(tmp.querySelectorAll("td")[3].innerText);
-            var coeff = parseFloat(tmp.querySelectorAll("td")[4].innerText);
-            avg += mark * coeff;
-            coeffs += coeff;
-        }
-        tmp = tmp.nextSibling;
-    }
-
-    avg /= coeffs
-    avg = Math.round(avg * 100) / 100;
-
-    if (!isNaN(avg)) {
-        ue.querySelectorAll("td")[3].innerText = avg;
-        ue.querySelectorAll("td")[3].className = "number";
-    }
+    // Displays the general average (it's already there just not showed)
+    root.querySelector(".releve>section:nth-child(3)").style.display = "block";
 }
 
-// Calculates the global average
-var avg = 0;
-var coeffs = 0;
-for (var ue of document.getElementsByClassName("ue")) {
-    var mark = parseFloat(ue.getElementsByClassName("number")[0].innerText);
-    var coeff = parseFloat(ue.getElementsByClassName("number")[1].innerText);
-    
-    if (!isNaN(mark) && !isNaN(coeff)) {
-        avg += mark * coeff;
-        coeffs += coeff;
-    }
-}
-
-avg /= coeffs
-avg = Math.round(avg * 100) / 100;
-// console.log(avg);
-document.querySelector("table").parentElement.innerHTML += '<div style="text-align: center; font-size: 24px; color: black; margin-top: 20px; background-color: white; border: 1px black solid; padding: 4px;">Moyenne générale : ' + avg + '</div>';
+// Js takes time to load (not mine, mine is beautiful okay), so there is multiple tries to calculate average
+// In addition to this, if you change semester, the page is not reloaded (thanks all-js menus) so I have to poll the page
+setInterval(calculateAverage, 1000);
