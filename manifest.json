@@ -1,6 +1,6 @@
 {
   "name": "IUT Average Mark Calculator",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "manifest_version": 3,
   "description": "Calculates your average marks on the IUT website.",
   "content_scripts": [

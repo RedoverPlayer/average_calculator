@@ -1,14 +1,3 @@
-function httpGetAsync(theUrl, callback)
-{
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() { 
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-            callback(xmlHttp.responseText);
-    }
-    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
-    xmlHttp.send(null);
-}
-
 function addSection(shadowRoot, title) {
     var section = shadowRoot.appendChild(document.createElement('section'));
     section.className = "section";
@@ -29,14 +18,7 @@ function addRessource(section) {
 
 function addRessourceTitle(ressourceDiv, title) {
     ressourceTitleContainer = ressourceDiv.appendChild(document.createElement('div'));
-    ressourceTitleContainer.style.display = "flex";
-    ressourceTitleContainer.style.justifyContent = "space-between";
-    ressourceTitleContainer.style.backgroundColor = "#00be82";
-    ressourceTitleContainer.style.padding = "0.2em";
-    ressourceTitleContainer.style.borderRadius = "0.2em";
-    ressourceTitleContainer.style.color = "white";
-    ressourceTitleContainer.style.paddingLeft = "2em";
-    ressourceTitleContainer.style.paddingRight = "2em";
+    ressourceTitleContainer.style = "display: flex; justify-content: space-between; background-color: #00be82; padding: 0.2em; border-radius: 0.2em; color: white; padding-left: 2em; padding-right: 2em;";
 
     ressourceTitle = ressourceTitleContainer.appendChild(document.createElement('div'));
     ressourceTitle.style.fontSize = "1.1em";
@@ -47,9 +29,7 @@ function addRessourceTitle(ressourceDiv, title) {
 
 function addEvalContainer(section) {
     var evalContainer = section.appendChild(document.createElement('div'));
-    evalContainer.style.display = "flex";
-    evalContainer.style.flexDirection = "column";
-    evalContainer.style.marginLeft = "2em";
+    evalContainer.style = "display: flex; flex-direction: column; margin-left: 2em";
 
     return evalContainer;
 }
@@ -58,33 +38,24 @@ function addEvaluation(section, evaluation, poids, isUE=false) {
     var eval = section.appendChild(document.createElement('div'));
     eval.innerText = evaluation.description;
     eval.title = "Min: " + evaluation.note.min + ", Max: " + evaluation.note.max;
-    eval.style.borderBottom = "1px solid black";
-    eval.style.display = "flex";
-    eval.style.justifyContent = "space-between";
-    eval.style.gap = "1em"; 
-    eval.style.paddingLeft = "0.2em";
-    eval.style.paddingRight = "0.2em";
+    eval.style = "border-bottom: 1px solid black; display: flex; justify-content: space-between; gap: 1em; padding-left: 0.2em; padding-right: 0.2em;"
 
     var evalNote = eval.appendChild(document.createElement('div'));
     evalNote.innerText = evaluation.note.value;
-    evalNote.style.marginLeft = "auto";
-    evalNote.style.width = "4em";
+    evalNote.style = "margin-left: auto; width: 4em";
 
     var evalMoy = eval.appendChild(document.createElement('div'));
     evalMoy.innerText = "Moy. " + evaluation.note.moy;
-    evalMoy.style.color = "rgb(120, 120, 120)";
-    evalMoy.style.width = "5em";
+    evalMoy.style = "color: rgb(120, 120, 120); width: 5em";
 
     var evalCoef = eval.appendChild(document.createElement('div'));
     evalCoef.innerText = "Coeff. " + evaluation.coef;
-    evalCoef.style.color = "rgb(120, 120, 120)";
-    evalCoef.style.width = "5.6em";
+    evalCoef.style = "color: rgb(120, 120, 120); width: 5.6em";
 
     if (isUE) {
         var evalPoids = eval.appendChild(document.createElement('div'));
         evalPoids.innerText = "Poids. " + poids;
-        evalPoids.style.color = "rgb(120, 120, 120)";
-        evalPoids.style.width = "5.6em";
+        evalPoids.style = "color: rgb(120, 120, 120); width: 5.6em";
     }
 
     if (parseFloat(evaluation.note.value) >= parseFloat(evaluation.note.max)) {
@@ -118,15 +89,14 @@ function addToUE(ues, ressource, evaluation) {
     }
 }
 
-function handleInfos(data) {
+function displaySemester(data) {
     var root = document.querySelector("releve-but").shadowRoot;
-    root.querySelector(".releve>section:nth-child(3)").style.display = "block"; // display global avg
 
     // delete existing content
     var sections = root.querySelectorAll("section");
     for (section of sections) {
         try {
-            if (section.querySelector("div").querySelector("h2").innerText == "Ressources" || section.querySelector("div").querySelector("h2").innerText == "SAÉ") {
+            if (section.className != "etudiant") {
                 section.remove();
             }
         } catch {
@@ -134,9 +104,26 @@ function handleInfos(data) {
         }
     }
 
-    var data = JSON.parse(data);
     data = data["relev\u00e9"];
     var ues = {}
+
+    // Add average
+    var avgSection = addSection(root, `Semestre ${data.semestre.numero} - ${data.semestre.groupes[0].group_name}`);
+
+    var groupDiv = avgSection.appendChild(document.createElement('div'));
+    groupDiv.innerText = ``
+
+    var avgDiv = avgSection.appendChild(document.createElement('div'));
+    avgDiv.style = "border: 1px solid black; display: flex; flex-direction: column; width: 160px; margin-top: 7px; padding: 5px;"
+    avgDiv.innerHTML += `<div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 20px;"><div>Moyenne :</div><div>${data.semestre.notes.value}</div></div>`;
+    avgDiv.innerHTML += `<div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 20px;"><div>Rang :</div><div>${data.semestre.rang.value}/${data.semestre.rang.total}</div></div>`;
+    avgDiv.innerHTML += `<div style="display: flex; justify-content: space-between;"><div>Min promo :</div><div>${data.semestre.notes.min}</div></div>`;
+    avgDiv.innerHTML += `<div style="display: flex; justify-content: space-between;"><div>Max promo :</div><div>${data.semestre.notes.max}</div></div>`;
+    avgDiv.innerHTML += `<div style="display: flex; justify-content: space-between;"><div>Moy promo :</div><div>${data.semestre.notes.moy}</div></div>`;
+
+    var ectsDiv = avgSection.appendChild(document.createElement('div'));
+    ectsDiv.innerText = `ECTS: ${data.semestre.ECTS.acquis} / ${data.semestre.ECTS.total}`;
+    ectsDiv.style = "margin-top: 7px;";
 
     // Add ressources
     var rSection = addSection(root, "Ressources");
@@ -231,13 +218,11 @@ function handleInfos(data) {
 
             var avg = sum / coefSum;
             ueRessTitleContainer.appendChild(document.createElement('div')).innerText = avg.toFixed(2);
-            // if (avg < 10) {
-            //     ueRessTitleContainer.style.backgroundColor = "#ff4600";
-            // }
         }
 
         var UEavg = UEsum / UEcoefSum;
         ueTitleContainer.appendChild(document.createElement('div')).innerText = UEavg.toFixed(2);
+
         if (UEavg < 8) {
             ueTitleContainer.style.backgroundColor = "orange";
         }
@@ -247,4 +232,48 @@ function handleInfos(data) {
     }
 }
 
-httpGetAsync("https://notes.iut.u-bordeaux.fr/services/data.php?q=dataPremi%C3%A8reConnexion", handleInfos);
+function firstData(data) {
+    document.querySelector("div.semestres").innerHTML = "";
+    document.querySelector("div.semestres").style.display = "flex";
+    document.querySelector("div.semestres").style.justifyContent = "center";
+
+    var tmp = [];
+
+    // order elems in tmp by semestre.semestre_id
+    for (var semestre of data.semestres) {
+        tmp[semestre.semestre_id - 1] = semestre;
+    }
+    
+    tmp.reverse();
+
+    for (var semestre of tmp) {
+        var option = document.createElement("button");
+        option.innerHTML = `<div>Semestre ${semestre.semestre_id}</div><div style="font-size: 15px;">${semestre.annee_scolaire}</div><div style="font-size: 15px;">${semestre.titre}</div>`;
+        option.id = semestre.formsemestre_id
+        option.style = "background-color: #ffffff; border: none; border-radius: 15px; box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2); margin: 10px; padding: 15px; width: 200px; font-size: 20px; color: #000000; text-align: center; cursor: pointer;";
+        option.onclick = function (event) {
+            fetchSemester(event);
+        }
+        document.querySelector("div.semestres").appendChild(option);
+    }
+
+    fetchSemester({target: {id: tmp[0].formsemestre_id}});
+}
+
+// site is currently broken, fixing json for use
+function patchData(data) {
+    var json = data.substring(data.indexOf("{")-1);
+    return JSON.parse(json)
+}
+
+function fetchSemester(event) {
+    if (event.target.id == "") {
+        var id = event.target.parentElement.id;
+    } else {
+        var id = event.target.id;
+    }
+
+    fetch(`https://notes.iut.u-bordeaux.fr/services/data.php?q=relev%C3%A9Etudiant&semestre=${id}`).then(response => response.text()).then(data => patchData(data)).then(data => displaySemester(data));
+}
+
+fetch("https://notes.iut.u-bordeaux.fr/services/data.php?q=dataPremi%C3%A8reConnexion").then(response => response.json()).then(data => firstData(data));
