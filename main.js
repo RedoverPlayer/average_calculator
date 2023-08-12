@@ -1,15 +1,3 @@
-// function firstData(data) {
-//     // Userlogged in
-//     if (!("redirect" in data)) {
-//         // redirect user to extension page
-//         chrome.runtime.sendMessage({ redirect: "home.html" }, function (response) {
-//             console.log(response);
-//         });
-//     }
-// }
-
-// fetch("https://notes.iut.u-bordeaux.fr/services/data.php?q=dataPremi%C3%A8reConnexion").then(response => response.json()).then(data => firstData(data));
-
 function displaySemester (data, semestres) {
     data = data["relev\u00e9"];
     buildSemesterMenu(data.formsemestre_id, semestres);
@@ -169,68 +157,5 @@ function firstData(data) {
 
     fetchSemester({target: {id: data.semestres[data.semestres.length - 1].formsemestre_id}}, data.semestres);
 }
-
-document.open()
-document.write(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-        <title>Notes</title>
-    </head>
-    <body data-bs-theme="dark" class="text-center">
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <div class="navbar-brand">Relevé de notes</div>
-            <div id="loading" class="spinner-grow" role="status"></div>
-            <a class="btn btn-danger" href="https://notes.iut.u-bordeaux.fr/logout.php">Déconnexion</a>
-        </div>
-        </nav>
-
-        <div class="semestres btn-group m-4" role="group"></div>
-
-        <div class="card text-start m-auto" style="width: 50%;">
-        <h2 id="semester_title" class="card-title text-center mt-2">Semestre - - ----</h2>    
-            <div class="d-flex flex-column m-auto align-items-center" style="width: 250px;">
-            <div class="fs-5 d-flex justify-content-between" style="width: 200px;"><div>Moyenne :</div><div id="average">--.--</div></div>
-            <div class="fs-5 d-flex justify-content-between" style="width: 200px;"><div>Rang :</div><div id="rank">--/--</div></div>
-            <div class="fs-5 d-flex justify-content-between" style="width: 200px;"><div>ECTS:</div><div id="ects">--/--</div></div>
-            </div>
-            
-            <div class="d-flex gap-2 m-auto mb-2 mt-2">
-            <div title="Minimum promo" id="minPromo"><span class="badge bg-danger">Min</span> --.--</div>
-            <div title="Moyenne promo" id="moyPromo"><span class="badge bg-secondary">Moy</span> --.--</div>
-            <div title="Maximum promo" id="maxPromo"><span class="badge bg-success">Max</span> --.--</div>
-            </div>
-        </div>
-
-        <div class="card text-start m-auto mt-2 p-4" style="width: 50%; min-width: 400px;">
-        <h2 class="text-center mb-2">Ressources</h2>
-        <div id="ressources" class="d-flex flex-column gap-2">
-        </div>
-        </div>
-
-        <div class="card text-start m-auto mt-2 p-4" style="width: 50%; min-width: 400px;">
-        <h2 class="text-center mb-2">SAÉs</h2>
-        <div id="saes" class="d-flex flex-column gap-2">
-        </div>
-        </div>
-
-        <footer class="p-4">
-        <p>
-            <i>Cette extension présente les notes universitaires à partir du site officiel de l'université avec <br>
-            un nouveau design et un calcul des moyennes tout en maintenant les données d'origine. Néanmoins, <br>
-            l'extension décline toute responsabilité en cas d'éventuels problèmes d'affichage ou de calcul des <br>
-            moyennes. Vous pouvez vérifier le code source par vous-même via le lien présent ci-dessous.</i>
-        </p>
-        
-        <a class="m-4" href="https://github.com/RedoverPlayer/average_calculator" target="_blank">https://github.com/RedoverPlayer/average_calculator</a>
-        </footer>
-    </body>
-    </html>
-`)
-document.close()
 
 fetch("https://notes.iut.u-bordeaux.fr/services/data.php?q=dataPremi%C3%A8reConnexion").then(response => response.json()).then(data => firstData(data));
