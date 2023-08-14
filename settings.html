@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <script src="bootstrap/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+</head>
+<body data-bs-theme="dark" class="text-center">
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand">Paramètres</a>
+        </div>
+      </nav>
+
+      <div class=" d-flex p-4 m-4 flex-row gap-4" style="height: 100%;">
+        <div class="card" style="min-width: 15rem;">
+          <div id="list-example" class="list-group">
+            <a class="list-group-item list-group-item-action" href="#list-item-1">Général</a>
+            <a class="list-group-item list-group-item-action" href="#list-item-2">Apparence</a>
+            <a class="list-group-item list-group-item-action" href="#list-item-3">Coefs UEs</a>
+            <a class="list-group-item list-group-item-action" href="#list-item-4">Comportement par défaut</a>
+          </div>
+        </div>
+        <div class="card text-start p-4" style="width: 100%;">
+          <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-smooth-scroll="true" class="scrollspy-example" tabindex="0">
+            <h4 id="list-item-1">Général</h4>
+    
+            <h6>URL</h6>
+            <div class="mb-3 ms-2" style="width: 35rem;">
+                <label for="siteUrl" class="form-label">Entrez ici l'URL du site de notes de votre IUT</label>
+                <div class="input-group">
+                    <span class="input-group-text" id="basic-addon3">https://</span>
+                    <input type="text" class="form-control" id="siteUrl" aria-describedby="basic-addon3 basic-addon4" placeholder="notes.iut.u-bordeaux.fr">
+                </div>
+                <div class="form-text" id="basic-addon4">Veuillez ne pas inclure de slash dans l'adresse. Exemple : notes.iut.u-bordeaux.fr</div>
+            </div><br><br>
+
+            
+
+
+
+            <h4 id="list-item-2">Apparence</h4>
+
+            <h6>Thème</h6>
+            <div class="btn-group ms-2" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" name="themeSelector" id="dark" autocomplete="off" value="dark" checked>
+                <label class="btn btn-outline-primary" for="dark">Sombre</label>
+              
+                <input type="radio" class="btn-check" name="themeSelector" id="light" autocomplete="off" value="light">
+                <label class="btn btn-outline-primary" for="light">Clair</label>
+            </div><br><br>
+            
+
+
+
+
+            <h6>Affichage des catégories</h6>
+            <div class="form-check form-switch ms-2">
+                <input class="form-check-input" type="checkbox" role="switch" id="displayRessources" checked>
+                <label class="form-check-label" for="displayRessources">Afficher les ressources</label>
+            </div>
+
+            <div class="form-check form-switch ms-2">
+                <input class="form-check-input" type="checkbox" role="switch" id="displaySaes" checked>
+                <label class="form-check-label" for="displaySaes">Afficher les SAÉs</label>
+            </div>
+
+            <div class="form-check form-switch ms-2">
+                <input class="form-check-input" type="checkbox" role="switch" id="displayUes" checked>
+                <label class="form-check-label" for="displayUes">Afficher les UEs</label>
+            </div><br><br>
+
+
+
+
+
+            <h4 id="list-item-3">Coefs UEs</h4>
+            <p>...</p>
+            <br><br>
+
+
+
+
+            <h4 id="list-item-4">Comportements par défaut</h4>
+
+            <h6 class="mt-1">Ressources</h6>
+            <div class="form-check form-switch ms-2">
+                <input class="form-check-input" type="checkbox" role="switch" id="ressourcesDevelopped" checked>
+                <label class="form-check-label" for="flexSwitchCheckChecked">Ressources développées par défaut</label>
+            </div>
+
+            <h6 class="mt-1">SAÉs</h6>
+            <div class="form-check form-switch ms-2">
+                <input class="form-check-input" type="checkbox" role="switch" id="saesDevelopped" checked>
+                <label class="form-check-label" for="saesDevelopped">SAÉs développées par défaut</label>
+            </div>
+
+            <h6 class="mt-1">UEs</h6>
+            <div class="form-check form-switch ms-2">
+                <input class="form-check-input" type="checkbox" role="switch" id="uesDevelopped">
+                <label class="form-check-label" for="uesDevelopped">UEs développées par défaut</label>
+            </div>
+
+            <div class="form-check form-switch ms-2">
+                <input class="form-check-input" type="checkbox" role="switch" id="uesRessourcesDevelopped">
+                <label class="form-check-label" for="uesRessourcesDevelopped">Ressources dans les UEs développées par défaut</label>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    <script src="settings.js"></script>
+</body>
+</html>

@@ -2,7 +2,7 @@
   "name": "IUT Average Mark Calculator",
   "version": "4.0.0",
   "manifest_version": 3,
-  "description": "Calcule vos moyennes sur le site de l'IUT (+ d'autres trucs).",
+  "description": "Calcule vos moyennes de ressources ainsi que les UEs en proposant une interface moderne et personnalisable.",
   "content_scripts": [
     {
       "matches": ["https://intranet.iut.u-bordeaux.fr/notes"],
@@ -10,14 +10,14 @@
     },
     {
       "matches": ["https://notes.iut.u-bordeaux.fr/"],
-      "js": ["content.js"]
+      "js": ["content.js", "bootstrap/bootstrap.bundle.min.js"]
     }
   ],
   "action": {
     "default_icon": "icon.png",
     "default_title": "Cliquez pour ouvrir la page de notes"
   },
-  "permissions": ["tabs"],
+  "permissions": ["tabs", "storage"],
   "background": {
     "service_worker": "background.js"
   }

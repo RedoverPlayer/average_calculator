@@ -1,11 +1,11 @@
-# average_calculator
-Calculates your average mark for the IUT.
+# Average Calculator
+Calcule vos moyennes de ressources ainsi que les UEs en proposant une interface moderne et personnalisable.
 
 # Installation
-## Via chrome web store (recommended)
+## Via le Chrome Web Store (recommandé)
 https://chrome.google.com/webstore/detail/iut-average-mark-calculat/enmnabdohpdemklhdfahgmlnfacdgcgl
-## Manually
-Type chrome://extensions in your url bar.
-Go into releases and download the latest version (the file extension is .crx)
-Drag and drop the file to your browser (in chrome://extensions)
-Activate developer mode if necessary
+## Manuellement
+Entrez chrome://extensions dans votre barre d'url.
+Sur GitHub, allez dans Releases et téléchargez la dernière version (l'extension du fichier est .crx)
+Glissez et déposez le fichier dans votre navigateur (dans chrome://extensions)
+Activez le mode développeur dans chrome://extensions si nécessaire
