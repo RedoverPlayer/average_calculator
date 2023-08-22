@@ -2,7 +2,7 @@
 function initLocalStorage() {
     // Site URL
     setIfNull('siteUrl', 'notes.iut.u-bordeaux.fr');
-    
+
     // Theme
     setIfNull('theme', 'dark');
 
@@ -19,7 +19,7 @@ function initLocalStorage() {
 }
 
 function setIfNull(key, value) {
-    chrome.storage.sync.get(key).then(function (data) {
+    chrome.storage.sync.get(key).then((data) => {
         if (data[key] === undefined) {
             chrome.storage.sync.set({ key: value });
         }
@@ -62,8 +62,8 @@ function initListeners() {
     };
 
     // Theme
-    document.getElementById('dark').onchange = function () { chrome.storage.sync.set({ 'theme': 'dark'}); location.reload(); }
-    document.getElementById('light').onchange = function () { chrome.storage.sync.set({ 'theme': 'light'}); location.reload(); }
+    document.getElementById('dark').onchange = function () { chrome.storage.sync.set({ 'theme': 'dark' }); location.reload(); }
+    document.getElementById('light').onchange = function () { chrome.storage.sync.set({ 'theme': 'light' }); location.reload(); }
 
     // Display categories
     checkUpdateListener('displayRessources');
@@ -75,20 +75,163 @@ function initListeners() {
     checkUpdateListener('saesDevelopped');
     checkUpdateListener('uesDevelopped');
     checkUpdateListener('uesRessourcesDevelopped');
+
+    // Data request
+    document.getElementById('dataRequestButton').onclick = fillSemesterSelect;
+}
+
+function fillSemesterSelect() {
+    document.getElementById('dataRequestButton').innerHTML = "Chargement des données...";
+
+    if (siteUrl !== undefined) {
+        fetch(`https://${siteUrl}/services/data.php?q=dataPremièreConnexion`).then(response => response.json()).then(data => {
+            if (data.redirect) {
+                alert("Merci de vous connecter pour pouvoir récupérer les données.");
+                document.getElementById('dataRequestButton').innerHTML = "Merci de vous connecter pour pouvoir récupérer les données.";
+                return;
+            }
+
+            document.getElementById('semesterSelection').innerHTML = "";
+            document.getElementById('dataRequestButton').innerHTML = "Données récupérées";
+            document.getElementById('dataRequestButton').className = "btn btn-success mt-2"
+            document.getElementById('semesterSelectionButton').disabled = false;
+
+            for (const semester of data.semestres) {
+                const button = document.createElement('button');
+                button.className = "dropdown-item"
+                button.value = semester.formsemestre_id;
+                button.innerText = `${semester.titre} - ${semester.annee_scolaire} - Semestre ${semester.semestre_id}`;
+                button.onclick = semesterSelected;
+                document.getElementById('semesterSelection').appendChild(button);
+            }
+        });
+    }
+}
+
+function semesterSelected(event) {
+    document.getElementById('semesterSelectionButton').innerText = event.target.innerText;
+
+    document.getElementById('semestersLoading').style.display = "block";
+    if (siteUrl !== undefined) {
+        fetch(`https://${siteUrl}/services/data.php?q=relevéEtudiant&semestre=${event.target.value}`).then(response => response.json()).then(data => {
+            if (data.redirect) {
+                alert("Merci de vous connecter pour pouvoir récupérer les données.");
+                document.getElementById('dataRequestButton').innerHTML = "Merci de vous connecter pour pouvoir récupérer les données.";
+                return;
+            }
+            document.getElementById('semestersLoading').style.display = "none";
+
+            // Load current semester data
+            const semesterID = `semesterUEs${event.target.value}`;
+            chrome.storage.sync.get(semesterID).then((result) => {
+                let ues = result[semesterID];
+                if (ues === undefined) { ues = {}; }
+
+                addRessources(data["relevé"]["ressources"], ues);
+                addRessources(data["relevé"]["saes"], ues);
+    
+                let obj = {};
+                obj[semesterID] = ues;
+                chrome.storage.sync.set(obj);
+                
+                buildRessourcesWeightSelector(ues, event.target.value);
+            });
+        });
+    }
+}
+
+function addRessources(ressources, ues) {
+    for (const ressource of Object.entries(ressources)) {
+        const ressourceName = ressource[0];
+
+        for (const evaluation of ressource[1].evaluations) {
+            for (const weight of Object.entries(evaluation.poids)) {
+                const ueName = weight[0]
+
+                if (weight[1] != 0) {
+                    if (!(ueName in ues)) {
+                        ues[ueName] = {name: ueName, ressources: {}};
+                    }
+                    if (!(ressourceName in ues[ueName].ressources)) {
+                        ues[ueName].ressources[ressourceName] = {name: ressourceName, titre: ressource[1].titre, weight: 0};
+                    }
+                }
+            }
+        }
+    }
+}
+
+function buildRessourcesWeightSelector(ues, currentSemester) {
+    const uesCoefsDiv = document.getElementById('uesCoefs');
+    uesCoefsDiv.innerHTML = "";
+    uesCoefsDiv.className = "mt-2"
+
+    for (const key of Object.keys(ues).sort()) {
+        const ueData = ues[key]
+        
+        const ueDiv = document.createElement('ul')
+        ueDiv.className = "list-group mt-2";
+
+        const ueName = document.createElement('li');
+        ueName.className = "list-group-item bg-primary";
+        ueName.innerText = ueData.name;
+
+        ueDiv.appendChild(ueName);
+        
+        for (const key of Object.keys(ueData.ressources).sort()) {
+            const ressourceData = ueData.ressources[key];
+            
+            const ressourceDiv = document.createElement('li');
+            ressourceDiv.className = "list-group-item d-flex justify-content-between align-items-center pt-0 pb-0 pe-0";
+            
+            let ressourceName = document.createElement('div');
+            ressourceName.innerText = ressourceData.name + " - " + ressourceData.titre;
+            ressourceDiv.appendChild(ressourceName);
+
+            // Input group
+            let ressourceWeight = document.createElement('div');
+            ressourceWeight.className = "input-group";
+            ressourceWeight.style.width = "9rem";
+
+            let ressourceWeightLabel = document.createElement('span');
+            ressourceWeightLabel.className = "input-group-text";
+            ressourceWeightLabel.innerText = "Coef";
+            ressourceWeight.id = `${ueData.name}-${ressourceData.name}`;
+            ressourceWeight.appendChild(ressourceWeightLabel);
+
+            let ressourceWeightInput = document.createElement('input');
+            ressourceWeightInput.type = "number";
+            ressourceWeightInput.className = "form-control";
+            ressourceWeightInput.min = 0;
+            ressourceWeightInput.value = ues[ueData.name].ressources[ressourceData.name].weight;
+            ressourceWeightInput.setAttribute('aria-label', "Coef");
+            ressourceWeightInput.setAttribute('aria-describedby', `${ueData.name}-${ressourceData.name}`);
+            ressourceWeightInput.onchange = (event) => { ressourceWeightChange(event, ues, ueData.name, ressourceData.name, currentSemester) };
+            ressourceWeight.appendChild(ressourceWeightInput);
+
+            ressourceDiv.appendChild(ressourceWeight);
+
+            ueDiv.appendChild(ressourceDiv);
+        }
+
+        uesCoefsDiv.appendChild(ueDiv);
+    }
+}
+
+function ressourceWeightChange(event, ues, ue, ressource, currentSemester) {
+    ues[ue].ressources[ressource].weight = parseFloat(event.target.value);
+
+    let obj = {};
+    obj[`semesterUEs${currentSemester}`] = ues;
+    chrome.storage.sync.set(obj);
 }
 
 function checkUpdateListener(key) {
     document.getElementById(key).onchange = function () {
         let checked = this.checked;
-        console.log(key, this.checked);
         const data = {};
         data[key] = checked;
-        chrome.storage.sync.set(data).then(function () {
-            console.log(`Value of "${key}" is set to ${checked}`);
-        });
-        chrome.storage.sync.get(key).then(function (data) {
-            console.log(`Actual value of "${key}" is ${data[key]}`);
-        });
+        chrome.storage.sync.set(data);
     }
 }
 
@@ -100,11 +243,13 @@ function initSite() {
     });
 }
 
-chrome.storage.sync.set({ 'ressourcesDevelopped': true });
-chrome.storage.sync.get('ressourcesDevelopped').then(function (data) {
-    console.log("zaez", data.ressourcesDevelopped);
-});
 initLocalStorage();
 initSettings();
 initListeners();
 initSite();
+
+// Site url
+let siteUrl;
+chrome.storage.sync.get('siteUrl').then((data) => {
+    siteUrl = data.siteUrl;
+});

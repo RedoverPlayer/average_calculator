@@ -141,7 +141,7 @@ function displayEvals(evals, ressourceAverage, ressourceUl, ressourceLi, isSAE) 
         ressourceUl.appendChild(evalLi);
     }
 
-    let average = (Math.round((total / coefTotal) * 100) / 100).toFixed(2);
+    let average = (total / coefTotal).toFixed(2);
     ressourceAverage.innerText = `${average}`;
 
     // Set ressource color depending on average. Orange between 8 and 10, red under 8
@@ -198,27 +198,33 @@ function addToUEs(ressources, uesDisplay) {
 }
 
 function calculateUEsAverages(uesDisplay) {
-    let uesRessourcesCoefs = localStorage.getItem("uesRessourcesCoefs");
-
     for (let ue of Object.entries(uesDisplay)) {
-        ueName = ue[0];
-        ueData = ue[1];
+        let ueData = ue[1];
+
+        let UEnotes = 0;
+        let UEcoefs = 0;
 
         for (let ressources of Object.entries(ueData.ressources)) {
-            let ressourceName = ressources[0];
             let ressourceData = ressources[1];
 
             let notes = 0;
             let coefs = 0;
 
-            for (let eval of ressourceData.evaluations) {
-                notes += eval.note.value * eval.ressourceCoef * eval.UECoef;
-                coefs += eval.ressourceCoef * eval.UECoef;
+            for (let evaluation of ressourceData.evaluations) {
+                notes += evaluation.note.value * evaluation.ressourceCoef * evaluation.UECoef;
+                coefs += evaluation.ressourceCoef * evaluation.UECoef;
             }
 
-            let average = (Math.round((notes / coefs) * 100) / 100).toFixed(2);
+            let average = (notes / coefs).toFixed(2);
             ressourceData.average = average;
+
+            const ressourceWeight = currentSemesterUEs[ue[0]].ressources[ressources[0]].weight;
+            UEnotes += average * ressourceWeight
+            UEcoefs += ressourceWeight;
         }
+
+        let average = (UEnotes / UEcoefs).toFixed(2);
+        ueData.average = average;
     }
 
     showUEs(uesDisplay);
@@ -229,7 +235,7 @@ function showUEs(uesDisplay) {
     uesDiv.innerHTML = "";
 
     // Accordion main div
-    ueAccordion = document.createElement("div");
+    const ueAccordion = document.createElement("div");
     ueAccordion.className = "accordion";
     ueAccordion.id = `uesAccordion`;
 
@@ -247,52 +253,73 @@ function showUEs(uesDisplay) {
         settingsButton.innerText = "Paramètres";
         settingsButton.onclick = () => { chrome.runtime.sendMessage({ redirect: "settings.html" }, function (response) { }); };
         warning.appendChild(settingsButton);
-        // warning.innerHTML += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
         uesDiv.appendChild(warning);
     }
 
     const sortedKeys = Object.keys(uesDisplay).sort();
 
-    for (let key of sortedKeys) {
-        ueName = key;
-        ueData = uesDisplay[key];
+    for (const key of sortedKeys) {
+        let ueName = key;
+        let ueData = uesDisplay[key];
 
         // Accordion item
-        ueDiv = document.createElement("div");
+        const ueDiv = document.createElement("div");
         ueDiv.className = "accordion-item";
         ueAccordion.appendChild(ueDiv);
 
         // Accordion header
-        ueHeader = document.createElement("h2");
+        const ueHeader = document.createElement("h2");
         ueHeader.className = "accordion-header";
         ueHeader.id = `ueHeader-${ueName}`;
         ueDiv.appendChild(ueHeader);
 
         // Accordion button
-        ueButton = document.createElement("button");
+        const ueButton = document.createElement("button");
         ueButton.className = "accordion-button collapsed";
         ueButton.type = "button";
         ueButton.setAttribute("data-bs-toggle", "collapse");
         ueButton.setAttribute("data-bs-target", `#ueCollapse-${ueName}`);
         ueButton.setAttribute("aria-expanded", "false");
         ueButton.setAttribute("aria-controls", `ueCollapse-${ueName}`);
-        ueButton.innerText = ueName;
+
+        ueContainer = document.createElement("div");
+        ueContainer.style.width = "100%";
+        ueContainer.className = "d-flex justify-content-between align-items-center me-2";
+        ueButton.appendChild(ueContainer);
+
+        ueTitle = document.createElement("div");
+        ueTitle.innerText = ueName;
+        ueContainer.appendChild(ueTitle);
+
+        ueAverage = document.createElement("div");
+        ueAverage.innerText = ueData.average;
+        ueAverage.style.marginLeft = "auto";
+        ueContainer.appendChild(ueAverage);
+
         ueHeader.appendChild(ueButton);
 
         // Accordion collapse
-        ueCollapse = document.createElement("div");
+        const ueCollapse = document.createElement("div");
         ueCollapse.id = `ueCollapse-${ueName}`;
         ueCollapse.className = "accordion-collapse collapse";
         ueCollapse.setAttribute("aria-labelledby", `ueHeader-${ueName}`);
         ueDiv.appendChild(ueCollapse);
 
+        chrome.storage.sync.get('uesDevelopped').then((result) => {
+            if (result.uesDevelopped) {
+                ueButton.className = "accordion-button";
+                ueButton.setAttribute("aria-expanded", "true");
+                ueCollapse.className = "accordion-collapse collapse show";
+            }
+        });
+
         // Accordion body
-        ueBody = document.createElement("div");
+        const ueBody = document.createElement("div");
         ueBody.className = "accordion-body";
         ueCollapse.appendChild(ueBody);
 
         // Ressources
-        ressourcesDiv = document.createElement("div");
+        const ressourcesDiv = document.createElement("div");
         ressourcesDiv.className = "d-flex flex-column gap-2";
         ueBody.appendChild(ressourcesDiv);
 
@@ -312,8 +339,17 @@ function showUEs(uesDisplay) {
             ressourceTitle.innerText = `${ressource[0]} - ${ressource[1].titre}`
             ressourceLi.appendChild(ressourceTitle);
 
+            // Ressource infos
+            let ressourceInfos = document.createElement("div");
+            ressourceInfos.className = "d-flex gap-4";
+
+            let ressourceCoef = document.createElement("div");
+            ressourceCoef.innerText = `Coef. ${currentSemesterUEs[ueName].ressources[ressourceName].weight}`;
+            ressourceInfos.appendChild(ressourceCoef);
+
             let ressourceAverage = document.createElement("div");
             ressourceAverage.innerText = `${ressourceData.average}`;
+            ressourceInfos.appendChild(ressourceAverage);
 
             // Set ressource color depending on average. Orange between 8 and 10, red under 8
             // The colors have been picked to be as readable as possible but if you have suggestions, feel free to open an issue
@@ -324,7 +360,7 @@ function showUEs(uesDisplay) {
             }
 
             // add to DOM
-            ressourceLi.appendChild(ressourceAverage);
+            ressourceLi.appendChild(ressourceInfos);
             ressourceUl.appendChild(ressourceLi);
             ressourcesDiv.appendChild(ressourceUl);
 
@@ -401,7 +437,12 @@ function fetchSemester(event, semestres) {
     loading();
     let id = event.target.id == "" ? event.target.parentElement.id : event.target.id;
     localStorage.setItem("currentSemester", id);
-    fetch(`https://notes.iut.u-bordeaux.fr/services/data.php?q=relev%C3%A9Etudiant&semestre=${id}`).then(response => response.text()).then(data => JSON.parse(data)).then(data => displaySemester(data, semestres));
+    fetch(`https://${siteUrl}/services/data.php?q=relev%C3%A9Etudiant&semestre=${id}`).then(response => response.text()).then(data => JSON.parse(data)).then(data => displaySemester(data, semestres));
+
+    // Retrieve UEs Coefs
+    chrome.storage.sync.get(`semesterUEs${id}`).then((data) => {
+        currentSemesterUEs = data[`semesterUEs${id}`];
+    });
 }
 
 // Display the list of semesters, which are clickable to fetch the data for a given semester
@@ -445,92 +486,109 @@ function firstData(data) {
     fetchSemester({ target: { id: data.semestres[data.semestres.length - 1].formsemestre_id } }, data.semestres);
 }
 
-console.log(localStorage.getItem('theme'));
+// Get site url
+let siteUrl = ""
+let currentSemesterUEs = {}
+chrome.storage.sync.get('siteUrl').then(function (data) {
+    siteUrl = data.siteUrl;
 
-// Replaces the original page with the extension's page
-document.open()
-document.write(`
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    <title>Notes</title>
-</head>
-<body data-bs-theme="dark" class="text-center">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <div class="container-fluid">
-        <div class="navbar-brand">Relevé de notes</div>
-        <div id="loading" class="spinner-grow" role="status"></div>
-        <div class="d-flex gap-2">
-            <div id="settings_container"></div>
-            <a class="btn btn-danger" href="https://notes.iut.u-bordeaux.fr/logout.php">Déconnexion</a>
+    // If the user is not on the site, don't do anything. The extension will load on all site but only activate on the one specified in the settings.
+    // This is done to enable the user to change the url of the site in the settings. If the site was set in the manifest, it would be impossible to change it.
+    if (document.location.host != siteUrl) {
+        return;
+    }
+
+    // Replaces the original page with the extension's page
+    document.open()
+    document.write(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="${chrome.runtime.getURL("bootstrap/bootstrap.min.css")}" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+        <title>Notes</title>
+    </head>
+    <body data-bs-theme="dark" class="text-center">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <div class="navbar-brand">Relevé de notes</div>
+            <div id="loading" class="spinner-grow" role="status"></div>
+            <div class="d-flex gap-2">
+                <div id="settings_container"></div>
+                <a class="btn btn-danger" href="https://${siteUrl}/logout.php">Déconnexion</a>
+            </div>
         </div>
-      </div>
-    </nav>
+        </nav>
 
-    <div class="semestres btn-group m-4" role="group"></div>
+        <div class="semestres btn-group m-4" role="group"></div>
 
-    <div class="card text-start m-auto" style="width: 90%; max-width: 60rem; min-width: 35rem;">
-      <h2 id="semester_title" class="card-title text-center mt-2">Semestre - - ----</h2>    
-        <div class="d-flex flex-column m-auto align-items-center" style="width: 250px;">
-          <div class="fs-5 d-flex justify-content-between" style="width: 200px;"><div>Moyenne :</div><div id="average">--.--</div></div>
-          <div class="fs-5 d-flex justify-content-between" style="width: 200px;"><div>Rang :</div><div id="rank">--/--</div></div>
-          <div class="fs-5 d-flex justify-content-between" style="width: 200px;"><div>ECTS:</div><div id="ects">--/--</div></div>
+        <div class="card text-start m-auto" style="width: 90%; max-width: 60rem; min-width: 35rem;">
+        <h2 id="semester_title" class="card-title text-center mt-2">Semestre - - ----</h2>    
+            <div class="d-flex flex-column m-auto align-items-center" style="width: 250px;">
+            <div class="fs-5 d-flex justify-content-between" style="width: 200px;"><div>Moyenne :</div><div id="average">--.--</div></div>
+            <div class="fs-5 d-flex justify-content-between" style="width: 200px;"><div>Rang :</div><div id="rank">--/--</div></div>
+            <div class="fs-5 d-flex justify-content-between" style="width: 200px;"><div>ECTS:</div><div id="ects">--/--</div></div>
+            </div>
+            
+            <div class="d-flex gap-2 m-auto mb-2 mt-2">
+            <div title="Minimum promo" id="minPromo"><span class="badge bg-danger">Min</span> --.--</div>
+            <div title="Moyenne promo" id="moyPromo"><span class="badge bg-secondary">Moy</span> --.--</div>
+            <div title="Maximum promo" id="maxPromo"><span class="badge bg-success">Max</span> --.--</div>
+            </div>
         </div>
+
+        <div id="ressources-container" class="card text-start m-auto mt-2 p-4" style="width: 90%; max-width: 60rem; min-width: 35rem;">
+        <h2 class="text-center mb-2">Ressources</h2>
+        <div id="ressources" class="d-flex flex-column gap-2">
+        </div>
+        </div>
+
+        <div id="saes-container" class="card text-start m-auto mt-2 p-4" style="width: 90%; max-width: 60rem; min-width: 35rem;">
+        <h2 class="text-center mb-2">SAÉs</h2>
+        <div id="saes" class="d-flex flex-column gap-2">
+        </div>
+        </div>
+
+        <div id="ues-container" class="card text-start m-auto mt-2 p-4" style="width: 90%; max-width: 60rem; min-width: 35rem;">
+            <h2 class="text-center mb-2">UEs</h2>
+            <div id="ues" class="d-flex flex-column gap-2">
+            </div>
+        </div>
+
+        <footer class="p-4">
+        <p>
+            <i>Cette extension présente les notes universitaires à partir du site officiel de l'université avec <br>
+            un nouveau design et un calcul des moyennes tout en maintenant les données d'origine. Néanmoins, <br>
+            l'extension décline toute responsabilité en cas d'éventuels problèmes d'affichage ou de calcul des <br>
+            moyennes. Vous pouvez vérifier le code source par vous-même via le lien présent ci-dessous.</i>
+        </p>
         
-        <div class="d-flex gap-2 m-auto mb-2 mt-2">
-          <div title="Minimum promo" id="minPromo"><span class="badge bg-danger">Min</span> --.--</div>
-          <div title="Moyenne promo" id="moyPromo"><span class="badge bg-secondary">Moy</span> --.--</div>
-          <div title="Maximum promo" id="maxPromo"><span class="badge bg-success">Max</span> --.--</div>
-        </div>
-    </div>
+        <a class="m-4" href="https://github.com/RedoverPlayer/average_calculator" target="_blank">https://github.com/RedoverPlayer/average_calculator</a>
+        </footer>
+    </body>
+    </html>
+    `)
+    document.close()
 
-    <div id="ressources-container" class="card text-start m-auto mt-2 p-4" style="width: 90%; max-width: 60rem; min-width: 35rem;">
-      <h2 class="text-center mb-2">Ressources</h2>
-      <div id="ressources" class="d-flex flex-column gap-2">
-      </div>
-    </div>
+    // Set theme
+    chrome.storage.sync.get('theme').then(function (data) {
+        document.body.setAttribute('data-bs-theme', data.theme);
+    });
 
-    <div id="saes-container" class="card text-start m-auto mt-2 p-4" style="width: 90%; max-width: 60rem; min-width: 35rem;">
-      <h2 class="text-center mb-2">SAÉs</h2>
-      <div id="saes" class="d-flex flex-column gap-2">
-      </div>
-    </div>
+    // Add bootstrap script
+    const bootstrapUrl = chrome.runtime.getURL("bootstrap/bootstrap.bundle.min.js");
+    const script = document.createElement("script");
+    script.src = bootstrapUrl;
+    document.body.appendChild(script);
 
-    <div id="ues-container" class="card text-start m-auto mt-2 p-4" style="width: 90%; max-width: 60rem; min-width: 35rem;">
-        <h2 class="text-center mb-2">UEs</h2>
-        <div id="ues" class="d-flex flex-column gap-2">
-        </div>
-    </div>
+    // Add settings button
+    let settingsButton = document.createElement("button");
+    settingsButton.className = "btn btn-primary";
+    settingsButton.innerText = "Paramètres";
+    settingsButton.onclick = () => { chrome.runtime.sendMessage({ redirect: "settings.html" }, function (response) { }); };
+    document.getElementById("settings_container").appendChild(settingsButton);
 
-    <footer class="p-4">
-      <p>
-        <i>Cette extension présente les notes universitaires à partir du site officiel de l'université avec <br>
-          un nouveau design et un calcul des moyennes tout en maintenant les données d'origine. Néanmoins, <br>
-          l'extension décline toute responsabilité en cas d'éventuels problèmes d'affichage ou de calcul des <br>
-          moyennes. Vous pouvez vérifier le code source par vous-même via le lien présent ci-dessous.</i>
-      </p>
-      
-      <a class="m-4" href="https://github.com/RedoverPlayer/average_calculator" target="_blank">https://github.com/RedoverPlayer/average_calculator</a>
-    </footer>
-</body>
-</html>
-`)
-document.close()
-
-// Set theme
-chrome.storage.sync.get('theme').then(function (data) {
-    document.body.setAttribute('data-bs-theme', data.theme);
+    // fetch the initial data, which contains the list of semesters (unlike fetchSemester)
+    fetch(`https://${siteUrl}/services/data.php?q=dataPremi%C3%A8reConnexion`).then(response => response.json()).then(data => firstData(data));
 });
-
-// Add settings button
-let settingsButton = document.createElement("button");
-settingsButton.className = "btn btn-primary";
-settingsButton.innerText = "Paramètres";
-settingsButton.onclick = () => { chrome.runtime.sendMessage({ redirect: "settings.html" }, function (response) { }); };
-document.getElementById("settings_container").appendChild(settingsButton);
-
-// fetch the initial data, which contains the list of semesters (unlike fetchSemester)
-fetch("https://notes.iut.u-bordeaux.fr/services/data.php?q=dataPremi%C3%A8reConnexion").then(response => response.json()).then(data => firstData(data));

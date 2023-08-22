@@ -10,7 +10,7 @@
     },
     {
       "matches": ["https://notes.iut.u-bordeaux.fr/"],
-      "js": ["content.js", "bootstrap/bootstrap.bundle.min.js"]
+      "js": ["content.js"]
     }
   ],
   "action": {
@@ -20,5 +20,11 @@
   "permissions": ["tabs", "storage"],
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["bootstrap/*"],
+      "matches": ["https://*/*"]
+    }
+  ]
 }
