@@ -3,10 +3,10 @@ function displayRessources(ressources, isSAE = false) {
     const ressourcesDiv = document.getElementById('ressources')
     const saesDiv = document.getElementById('saes')
 
-    if (!isSAE) {
-        ressourcesDiv.innerHTML = ''
-    } else {
+    if (isSAE) {
         saesDiv.innerHTML = ''
+    } else {
+        ressourcesDiv.innerHTML = ''
     }
 
     for (const ressource of Object.entries(ressources)) {
@@ -40,10 +40,10 @@ function displayRessources(ressources, isSAE = false) {
         )
 
         // Add ressource to DOM
-        if (!isSAE) {
-            ressourcesDiv.appendChild(ressourceUl)
-        } else {
+        if (isSAE) {
             saesDiv.appendChild(ressourceUl)
+        } else {
+            ressourcesDiv.appendChild(ressourceUl)
         }
     }
 }
@@ -60,11 +60,14 @@ function displayEvals(
 
     for (const eval of evals) {
         // Add eval to ressource average
-        const note = parseFloat(eval.note.value)
-        const coef = parseFloat(eval.coef)
-        if (!isNaN(note) && !isNaN(coef)) {
-            total += note * coef
-            coefTotal += coef
+        const note = eval.note.value
+        const coef = eval.coef
+
+        const noteNum = parseFloat(note)
+        const coefNum = parseFloat(coef)
+        if (!isNaN(noteNum) && !isNaN(coefNum)) {
+            total += noteNum * coefNum
+            coefTotal += coefNum
         }
 
         // Create eval elem
@@ -79,16 +82,26 @@ function displayEvals(
 
         // Eval note
         const evalNote = document.createElement('div')
-        evalNote.innerText = eval.note.value
-        // Display badges indicating if the note is the max or min of the promo
-        if (eval.note.value == eval.note.max) {
-            evalNote.innerHTML = `<span class="badge bg-success">Max</span> ${eval.note.value}`
-        } else if (eval.note.value == eval.note.min) {
-            evalNote.innerHTML = `<span class="badge bg-danger">Min</span> ${eval.note.value}`
-        }
         evalNote.style.marginLeft = 'auto'
         evalNote.style.minWidth = '2.4rem'
         evalNote.className = 'd-flex align-items-center gap-2'
+
+        // Display badges indicating if the note is the max or min of the promo
+        const maxBadge = `<span class="badge bg-success">Max</span> ${note}`
+        const minBadge = `<span class="badge bg-danger">Min</span> ${note}`
+        switch (note) {
+            case eval.note.max:
+                evalNote.innerHTML = maxBadge
+                break
+
+            case eval.note.min:
+                evalNote.innerHTML = minBadge
+                break
+
+            default:
+                evalNote.innerText = note
+        }
+
         evalLi.appendChild(evalNote)
 
         // Eval moy
@@ -106,25 +119,18 @@ function displayEvals(
         evalLi.appendChild(evalCoef)
 
         // Default collapse
-        if (!isSAE) {
-            chrome.storage.sync.get('ressourcesDevelopped').then(result => {
-                if (!result.ressourcesDevelopped) {
-                    evalLi.style.setProperty('display', 'none', 'important')
-                }
-            })
-        } else {
-            chrome.storage.sync.get('saesDevelopped').then(result => {
-                if (!result.saesDevelopped) {
-                    evalLi.style.setProperty('display', 'none', 'important')
-                }
-            })
-        }
+        const key = isSAE ? 'saesDevelopped' : 'ressourcesDevelopped'
+        chrome.storage.sync.get(key).then(result => {
+            if (!result[key]) {
+                evalLi.style.setProperty('display', 'none', 'important')
+            }
+        })
 
         ressourceUl.appendChild(evalLi)
     }
 
     const average = (total / coefTotal).toFixed(2)
-    ressourceAverage.innerText = `${average}`
+    ressourceAverage.innerText = average
 
     // Set ressource color depending on average. Orange between 8 and 10, red under 8
     // The colors have been picked to be as readable as possible but if you have suggestions, feel free to open an issue
