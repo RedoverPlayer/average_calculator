@@ -1,31 +1,3 @@
-// Filling storage values if they are not set yet
-function initLocalStorage() {
-    // Site URL
-    setIfNull('siteUrl', 'notes.iut.u-bordeaux.fr');
-
-    // Theme
-    setIfNull('theme', 'dark');
-
-    // Display categories
-    setIfNull('displayRessources', true);
-    setIfNull('displaySaes', true);
-    setIfNull('displayUes', true);
-
-    // Default developped categories
-    setIfNull('ressourcesDevelopped', true);
-    setIfNull('saesDevelopped', true);
-    setIfNull('uesDevelopped', false);
-    setIfNull('uesRessourcesDevelopped', false);
-}
-
-function setIfNull(key, value) {
-    chrome.storage.sync.get(key).then((data) => {
-        if (data[key] === undefined) {
-            chrome.storage.sync.set({ key: value });
-        }
-    });
-}
-
 // Init the settings inputs from storage
 function initSettings() {
     chrome.storage.sync.get('siteUrl').then(function (data) {
@@ -140,27 +112,6 @@ function semesterSelected(event) {
     }
 }
 
-function addRessources(ressources, ues) {
-    for (const ressource of Object.entries(ressources)) {
-        const ressourceName = ressource[0];
-
-        for (const evaluation of ressource[1].evaluations) {
-            for (const weight of Object.entries(evaluation.poids)) {
-                const ueName = weight[0]
-
-                if (weight[1] != 0) {
-                    if (!(ueName in ues)) {
-                        ues[ueName] = {name: ueName, ressources: {}};
-                    }
-                    if (!(ressourceName in ues[ueName].ressources)) {
-                        ues[ueName].ressources[ressourceName] = {name: ressourceName, titre: ressource[1].titre, weight: 0};
-                    }
-                }
-            }
-        }
-    }
-}
-
 function buildRessourcesWeightSelector(ues, currentSemester) {
     const uesCoefsDiv = document.getElementById('uesCoefs');
     uesCoefsDiv.innerHTML = "";
@@ -244,9 +195,9 @@ function initSite() {
 }
 
 initLocalStorage();
-initSettings();
-initListeners();
-initSite();
+setTimeout(initSettings, 100);
+setTimeout(initListeners, 100);
+setTimeout(initSite, 100);
 
 // Site url
 let siteUrl;

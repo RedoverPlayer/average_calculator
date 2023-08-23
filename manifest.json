@@ -5,17 +5,13 @@
   "description": "Calcule vos moyennes de ressources ainsi que les UEs en proposant une interface moderne et personnalisable.",
   "content_scripts": [
     {
-      "matches": ["https://intranet.iut.u-bordeaux.fr/notes"],
-      "js": ["content_legacy.js"]
-    },
-    {
-      "matches": ["https://notes.iut.u-bordeaux.fr/"],
-      "js": ["content.js"]
+      "matches": ["https://*/*"],
+      "js": ["main/ressources.js", "main/ues.js", "main/utils.js", "main/semesters.js", "settings/init-local-storage.js", "settings/update-ues.js", "content.js"]
     }
   ],
   "action": {
     "default_icon": "icon.png",
-    "default_title": "Cliquez pour ouvrir la page de notes"
+    "default_title": "Cliquez pour ouvrir les paramètres"
   },
   "permissions": ["tabs", "storage"],
   "background": {
@@ -23,7 +19,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["bootstrap/*"],
+      "resources": ["bootstrap/*", "settings.html", "main/*"],
       "matches": ["https://*/*"]
     }
   ]

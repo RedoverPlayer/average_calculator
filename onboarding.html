@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue</title>
+    <script src="bootstrap/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css">
+</head>
+<body data-bs-theme="dark" class="text-center">
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand">Onboarding</a>
+            <a class="btn btn-primary" href="settings.html" role="button">Paramètres</a>
+        </div>
+    </nav>
+
+    <div class="card text-start p-4 m-4" style="margin-left: auto !important; margin-right: auto !important; min-width: 40rem; width: 50%;">
+        <h2>Bienvenue sur l'extension</h2>
+        <p>Veuillez remplir les champs ci-dessous pour pouvoir faire fonctionner l'extension.<br>
+        Vous pouvez les changer à tout moment dans l'onglet paramètres, ainsi qu'y personnaliser<br>
+        l'apparence du site de notes.<br>
+        INFO: vous pouvez accéder aux paramètres en cliquant sur le logo de l'extension en haut à droite.</p><br><br>
+        
+
+        <h6>URL</h6>
+        <div class="mb-3 ms-2" style="width: 35rem;">
+            <label for="siteUrl" class="form-label">Entrez ici l'URL du site de notes de votre IUT</label>
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon3">https://</span>
+                <input type="text" class="form-control" id="siteUrl" aria-describedby="basic-addon3 basic-addon4" placeholder="notes.iut.u-bordeaux.fr">
+            </div>
+            <div class="form-text" id="basic-addon4">Veuillez ne pas inclure de slash dans l'adresse. Exemple : notes.iut.u-bordeaux.fr</div>
+        </div><br><br>
+
+
+        <h6>Thème</h6>
+        <div class="btn-group ms-2" role="group" aria-label="Basic radio toggle button group" style="max-width: 4rem;">
+            <input type="radio" class="btn-check" name="themeSelector" id="dark" autocomplete="off" value="dark" checked>
+            <label class="btn btn-outline-primary" for="dark">Sombre</label>
+        
+            <input type="radio" class="btn-check" name="themeSelector" id="light" autocomplete="off" value="light">
+            <label class="btn btn-outline-primary" for="light">Clair</label>
+        </div>
+    </div>
+    <script src="settings/init-local-storage.js"></script>
+    <script src="onboarding.js"></script>
+</body>
+</html>
