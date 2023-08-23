@@ -1,37 +1,36 @@
 // ---- Semesters ----
 function displaySemester(data, semestres, currentSemesterUEs) {
     updateUEs(data, localStorage.getItem('currentSemester')) // Update the UEs Coefs
-    data = data['relevé']
-    buildSemesterMenu(data.formsemestre_id, semestres, currentSemesterUEs)
-    displaySemesterInfo(data)
+    const { relevé } = data
+    buildSemesterMenu(relevé.formsemestre_id, semestres, currentSemesterUEs)
+    displaySemesterInfo(relevé)
 
-    chrome.storage.sync.get('displayRessources').then(result => {
+    async function checkKey(key) {
+        const result = await chrome.storage.sync.get(key)
+        return !!result[key]
+    }
+
+    checkKey('displayRessources').then(exists => {
         const container = document.getElementById('ressources-container')
-        if (result.displayRessources) {
-            container.style.display = 'block'
-            displayRessources(data.ressources) // Display the Ressources
-        } else {
-            container.style.display = 'none'
+        container.style.display = exists ? 'block' : 'none'
+        if (exists) {
+            displayRessources(relevé.ressources) // Display the Ressources
         }
     })
 
-    chrome.storage.sync.get('displaySaes').then(result => {
+    checkKey('displaySaes').then(exists => {
         const container = document.getElementById('saes-container')
-        if (result.displaySaes) {
-            container.style.display = 'block'
-            displayRessources(data.saes, true) // Display the SAEs (Situations d'Apprentissage et d'Evaluation)
-        } else {
-            container.style.display = 'none'
+        container.style.display = exists ? 'block' : 'none'
+        if (exists) {
+            displayRessources(relevé.saes, true) // Display the SAEs (Situations d'Apprentissage et d'Evaluation)
         }
     })
 
-    chrome.storage.sync.get('displayUes').then(result => {
+    checkKey('displayUes').then(exists => {
         const container = document.getElementById('ues-container')
-        if (result.displayUes) {
-            container.style.display = 'block'
-            displayUEs(data.ressources, data.saes, currentSemesterUEs) // Display the UEs (Unités d'Enseignement)
-        } else {
-            container.style.display = 'none'
+        container.style.display = exists ? 'block' : 'none'
+        if (exists) {
+            displayUEs(relevé.ressources, relevé.saes, currentSemesterUEs) // Display the UEs (Unités d'Enseignement)
         }
     })
 
@@ -68,7 +67,7 @@ function fetchSemester(event, semestres) {
 
     // Retrieve UEs Coefs
     chrome.storage.sync.get(`semesterUEs${id}`).then(data => {
-        let currentSemesterUEs = data[`semesterUEs${id}`]
+        const currentSemesterUEs = data[`semesterUEs${id}`]
         fetch(
             `https://${siteUrl}/services/data.php?q=relev%C3%A9Etudiant&semestre=${id}`
         )
