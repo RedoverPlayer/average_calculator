@@ -16,7 +16,7 @@ function displaySemester(data, semestres, currentSemesterUEs) {
     })
 
     chrome.storage.sync.get('displaySaes').then(result => {
-        const container = ocument.getElementById('saes-container')
+        const container = document.getElementById('saes-container')
         if (result.displaySaes) {
             container.style.display = 'block'
             displayRessources(data.saes, true) // Display the SAEs (Situations d'Apprentissage et d'Evaluation)
