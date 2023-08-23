@@ -1,6 +1,6 @@
 // ---- UEs ----
 function displayUEs(ressources, saes, currentSemesterUEs) {
-    let uesDisplay = {};
+    const uesDisplay = {};
 
     addToUEs(Object.entries(ressources), uesDisplay);
     addToUEs(Object.entries(saes), uesDisplay);
@@ -9,20 +9,40 @@ function displayUEs(ressources, saes, currentSemesterUEs) {
 }
 
 function addToUEs(ressources, uesDisplay) {
-    for (let ressource of ressources) {
-        let ressourceName = ressource[0];
-        let ressourceData = ressource[1];
+    for (const ressource of ressources) {
+        const [ressourceName, ressourceData] = ressource
 
-        for (let eval of ressourceData.evaluations) {
-            for (let ueWeight of Object.entries(eval.poids)) {
-                let ueName = ueWeight[0];
-                let ueCoef = ueWeight[1];
+        for (const eval of ressourceData.evaluations) {
+            for (const ueWeight of Object.entries(eval.poids)) {
+                const [ueName, ueCoef] = ueWeight
 
                 if (ueCoef > 0) {
-                    if (!(ueName in uesDisplay)) uesDisplay[ueName] = { ressources: {}, saes: {} };
-                    if (!(ressourceName in uesDisplay[ueName].ressources)) uesDisplay[ueName].ressources[ressourceName] = { id: ressourceName, titre: ressourceData.titre, evaluations: [], average: null };
+                    if(!(ueName in uesDisplay)){
+                        uesDisplay[ueName] = 
+                        { 
+                            ressources: {},
+                            saes: {} 
+                        };
+                    }
+                    if(!(ressourceName in uesDisplay[ueName].ressources)){
+                        uesDisplay[ueName].ressources[ressourceName] = 
+                        { 
+                            id: ressourceName,
+                            titre: ressourceData.titre,
+                            evaluations: [],
+                            average: null 
+                        };
+                    }
 
-                    uesDisplay[ueName].ressources[ressourceName].evaluations.push({ description: eval.description, note: eval.note, UECoef: ueWeight[1], ressourceCoef: eval.coef, coef: (eval.coef * ueWeight[1]).toFixed(2) });
+                    uesDisplay[ueName].ressources[ressourceName].evaluations.push(
+                        { 
+                            description: eval.description,
+                            note: eval.note,
+                            UECoef: ueWeight[1],
+                            ressourceCoef: eval.coef,
+                            coef: (eval.coef * ueWeight[1]).toFixed(2) 
+                        }
+                    );
                 }
             }
         }
@@ -30,33 +50,34 @@ function addToUEs(ressources, uesDisplay) {
 }
 
 function calculateUEsAverages(uesDisplay, currentSemesterUEs) {
-    if (currentSemesterUEs !== undefined && scanUEdict(currentSemesterUEs)) {
-        for (let ue of Object.entries(uesDisplay)) {
-            let ueData = ue[1];
+    if (currentSemesterUEs && scanUEdict(currentSemesterUEs)) {
+        for (const ue of Object.entries(uesDisplay)) {
+            const [ueName, ueData] = ue;
     
             let UEnotes = 0;
             let UEcoefs = 0;
     
-            for (let ressources of Object.entries(ueData.ressources)) {
-                let ressourceData = ressources[1];
+            for (const ressources of Object.entries(ueData.ressources)) {
+                const [ressourceName, ressourceData] = ressources;
     
                 let notes = 0;
                 let coefs = 0;
     
-                for (let evaluation of ressourceData.evaluations) {
-                    notes += evaluation.note.value * evaluation.ressourceCoef * evaluation.UECoef;
-                    coefs += evaluation.ressourceCoef * evaluation.UECoef;
+                for (const evaluation of ressourceData.evaluations) {
+                    const { note, ressourceCoef,UECoef } = evaluation;
+                    notes += note.value * ressourceCoef * UECoef;
+                    coefs += ressourceCoef * UECoef;
                 }
     
-                let average = (notes / coefs).toFixed(2);
+                const average = (notes / coefs).toFixed(2);
                 ressourceData.average = average;
     
-                const ressourceWeight = currentSemesterUEs[ue[0]].ressources[ressources[0]].weight;
+                const ressourceWeight = currentSemesterUEs[ueName].ressources[ressourceName].weight;
                 UEnotes += average * ressourceWeight
                 UEcoefs += ressourceWeight;
             }
     
-            let average = (UEnotes / UEcoefs).toFixed(2);
+            const average = (UEnotes / UEcoefs).toFixed(2);
             ueData.average = average;
         }
     }
@@ -65,13 +86,13 @@ function calculateUEsAverages(uesDisplay, currentSemesterUEs) {
 }
 
 function scanUEdict(currentSemesterUEs) {
-    for (let ue of Object.entries(currentSemesterUEs)) {
-        let ueData = ue[1];
+    for (const ue of Object.entries(currentSemesterUEs)) {
+        const [ueName, ueData] = ue;
 
-        for (let ressource of Object.entries(ueData.ressources)) {
-            let ressourceData = ressource[1];
+        for (const ressource of Object.entries(ueData.ressources)) {
+            const [ressourceName, ressourceData] = ressource;
 
-            if (ressourceData.weight == 0) {
+            if (ressourceData.weight === 0) {
                 return false;
             }
         }
@@ -81,7 +102,7 @@ function scanUEdict(currentSemesterUEs) {
 }
 
 function showUEs(uesDisplay, currentSemesterUEs) {
-    let uesDiv = document.getElementById("ues");
+    const uesDiv = document.getElementById("ues");
     uesDiv.innerHTML = "";
 
     // Accordion main div
@@ -90,16 +111,17 @@ function showUEs(uesDisplay, currentSemesterUEs) {
     ueAccordion.id = `uesAccordion`;
 
     // Display a warning prompting the user to set the UEs' ressources' coefs if they haven't been set yet
-    if (currentSemesterUEs == undefined || !scanUEdict(currentSemesterUEs)) {
-        let warning = document.createElement("div");
+    if (!currentSemesterUEs || !scanUEdict(currentSemesterUEs)) {
+        const warning = document.createElement("div");
         warning.className = "alert alert-warning alert-dismissible fade show";
         warning.role = "alert";
         warning.innerHTML = `Les coefficients des ressources n'ont pas été définis pour ce semestre, veuillez les saisir dans les paramètres (paramètres > coefs UEs) pour pouvoir calculer les moyennes des UEs.<br><br>`
 
-        let settingsButton = document.createElement("a");
+        const settingsButton = document.createElement("a");
         settingsButton.className = "btn btn-primary";
         settingsButton.innerText = "Paramètres";
         settingsButton.href = chrome.runtime.getURL("settings.html");
+
         warning.appendChild(settingsButton);
         uesDiv.appendChild(warning);
         
@@ -108,8 +130,7 @@ function showUEs(uesDisplay, currentSemesterUEs) {
 
     const sortedKeys = Object.keys(uesDisplay).sort();
 
-    for (const key of sortedKeys) {
-        let ueName = key;
+    for (const ueName of sortedKeys) {
         let ueData = uesDisplay[key];
 
         // Accordion item
@@ -155,7 +176,7 @@ function showUEs(uesDisplay, currentSemesterUEs) {
         ueCollapse.setAttribute("aria-labelledby", `ueHeader-${ueName}`);
         ueDiv.appendChild(ueCollapse);
 
-        chrome.storage.sync.get('uesDevelopped').then((result) => {
+        chrome.storage.sync.get('uesDevelopped').then(result => {
             if (result.uesDevelopped) {
                 ueButton.className = "accordion-button";
                 ueButton.setAttribute("aria-expanded", "true");
@@ -173,31 +194,30 @@ function showUEs(uesDisplay, currentSemesterUEs) {
         ressourcesDiv.className = "d-flex flex-column gap-2";
         ueBody.appendChild(ressourcesDiv);
 
-        for (let ressource of Object.entries(ueData.ressources)) {
-            let ressourceName = ressource[0];
-            let ressourceData = ressource[1];
+        for (const ressource of Object.entries(ueData.ressources)) {
+            const [ressourceName, ressourceData] = ressource;
 
-            let ressourceUl = document.createElement("ul");
+            const ressourceUl = document.createElement("ul");
             ressourceUl.className = "list-group";
 
             // Ressource title
-            let ressourceLi = document.createElement("button");
+            const ressourceLi = document.createElement("button");
             ressourceLi.className = "list-group-item bg-success d-flex justify-content-between text-light";
-            ressourceLi.onclick = (event) => { toggleEvals(event) };
+            ressourceLi.onclick = toggleEvals
 
-            let ressourceTitle = document.createElement("div");
+            const ressourceTitle = document.createElement("div");
             ressourceTitle.innerText = `${ressource[0]} - ${ressource[1].titre}`
             ressourceLi.appendChild(ressourceTitle);
 
             // Ressource infos
-            let ressourceInfos = document.createElement("div");
+            const ressourceInfos = document.createElement("div");
             ressourceInfos.className = "d-flex gap-4";
 
-            let ressourceCoef = document.createElement("div");
+            const ressourceCoef = document.createElement("div");
             ressourceCoef.innerText = `Coef. ${currentSemesterUEs[ueName].ressources[ressourceName].weight}`;
             ressourceInfos.appendChild(ressourceCoef);
 
-            let ressourceAverage = document.createElement("div");
+            const ressourceAverage = document.createElement("div");
             ressourceAverage.innerText = `${ressourceData.average}`;
             ressourceInfos.appendChild(ressourceAverage);
 
@@ -222,57 +242,74 @@ function showUEs(uesDisplay, currentSemesterUEs) {
     uesDiv.appendChild(ueAccordion);
 }
 
+// ALMOST THE SAME AS displayEvals() from main\ressources.js
+// MAYBE MERGE THEM ?
 function displayUEEvals(evals, ressourceUl, ressourceLi, id) {
     let total = 0;
     let coefTotal = 0;
 
-    for (let eval of evals) {
+    for (const eval of evals) {
         // Add eval to ressource average
-        if (!isNaN(parseFloat(eval.note.value)) && !isNaN(parseFloat(eval.coef))) {
-            total += parseFloat(eval.note.value) * parseFloat(eval.coef);
-            coefTotal += parseFloat(eval.coef);
+        const note = eval.note.value;
+        const coef = eval.coef;
+
+        const noteNum = parseFloat(note);
+        const coefNum = parseFloat(coef);
+        if (!isNaN(noteNum) && !isNaN(coefNum)) {
+            total += noteNum * coefNum;
+            coefTotal += coefNum;
         }
 
         // Create eval elem
-        let evalLi = document.createElement("li");
+        const evalLi = document.createElement("li");
         evalLi.className = "list-group-item d-flex gap-5 pt-1 pb-1 pl-2 pr-2";
         evalLi.title = `Min. ${eval.note.min}, Max ${eval.note.max}`;
         evalLi.id = id;
 
         // Eval title
-        let evalTitle = document.createElement("div");
+        const evalTitle = document.createElement("div");
         evalTitle.innerText = eval.description;
         evalLi.appendChild(evalTitle);
 
         // Eval note
-        let evalNote = document.createElement("div");
-        evalNote.innerText = eval.note.value;
-        // Display badges indicating if the note is the max or min of the promo
-        if (eval.note.value == eval.note.max) {
-            evalNote.innerHTML = `<span class="badge bg-success">Max</span> ${eval.note.value}`;
-        } else if (eval.note.value == eval.note.min) {
-            evalNote.innerHTML = `<span class="badge bg-danger">Min</span> ${eval.note.value}`;
-        }
+        const evalNote = document.createElement("div");
         evalNote.style.marginLeft = "auto";
         evalNote.style.minWidth = "2.4rem";
         evalNote.className = "d-flex align-items-center gap-2";
+        // Display badges indicating if the note is the max or min of the promo
+
+        const maxBadge = `<span class="badge bg-success">Max</span> ${note}`
+        const minBadge = `<span class="badge bg-danger">Min</span> ${note}`
+        switch (note) {
+            case eval.note.max:
+                evalNote.innerHTML = maxBadge
+                break
+
+            case eval.note.min:
+                evalNote.innerHTML = minBadge
+                break
+
+            default:
+                evalNote.innerText = note
+        }
+
         evalLi.appendChild(evalNote);
 
         // Eval moy
-        let evalMoy = document.createElement("div");
+        const evalMoy = document.createElement("div");
         evalMoy.innerText = `Moy. ${eval.note.moy}`;
         evalMoy.className = "text-secondary d-flex align-items-center";
         evalMoy.style.minWidth = "4.9rem";
         evalLi.appendChild(evalMoy);
 
         // Eval coef
-        let evalCoef = document.createElement("div");
+        const evalCoef = document.createElement("div");
         evalCoef.innerText = `Coef. ${eval.coef}`;
         evalCoef.className = "text-secondary d-flex align-items-center";
         evalCoef.style.minWidth = "5rem";
         evalLi.appendChild(evalCoef);
 
-        chrome.storage.sync.get('uesRessourcesDevelopped').then(function (result) {
+        chrome.storage.sync.get('uesRessourcesDevelopped').then(result => {
             if (!result.uesRessourcesDevelopped) {
                 evalLi.style.setProperty('display', 'none', 'important');
             }
