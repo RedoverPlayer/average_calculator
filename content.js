@@ -11,18 +11,18 @@ function firstData(data) {
     fetchSemester({ target: { id: data.semestres[data.semestres.length - 1].formsemestre_id } }, data.semestres);
 }
 
-initLocalStorage();
-
 // Get site url
-let siteUrl = "";
 chrome.storage.sync.get('siteUrl').then(function (data) {
-    siteUrl = data.siteUrl;
+    let siteUrl = data.siteUrl;
 
     // If the user is not on the site, don't do anything. The extension will load on all site but only activate on the one specified in the settings.
     // This is done to enable the user to change the url of the site in the settings. If the site was set in the manifest, it would be impossible to change it.
     if (document.location.host != siteUrl) {
         return;
     }
+
+    localStorage.setItem("siteUrl", siteUrl);
+    initLocalStorage();
 
     // Replaces the original page with the extension's page
     document.open()

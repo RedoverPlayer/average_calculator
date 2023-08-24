@@ -51,7 +51,7 @@ function fetchSemester(event, semestres) {
     // Retrieve UEs Coefs
     chrome.storage.sync.get(`semesterUEs${id}`).then((data) => {
         let currentSemesterUEs = data[`semesterUEs${id}`];
-        fetch(`https://${siteUrl}/services/data.php?q=relev%C3%A9Etudiant&semestre=${id}`).then(response => response.text()).then(data => JSON.parse(data)).then(data => displaySemester(data, semestres, currentSemesterUEs));
+        fetch(`https://${localStorage.getItem('siteUrl')}/services/data.php?q=relev%C3%A9Etudiant&semestre=${id}`).then(response => response.text()).then(data => JSON.parse(data)).then(data => displaySemester(data, semestres, currentSemesterUEs));
     });
 }
 
