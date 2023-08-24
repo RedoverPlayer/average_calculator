@@ -1,38 +1,49 @@
 function firstData(data) {
     // If the user is not logged in, redirect to the CAS login page
-    if ("redirect" in data) {
-        window.location.href = window.location.href + data.redirect + "?href=" + encodeURIComponent(window.location.href);
+    if ('redirect' in data) {
+        window.location.href = `${window.location.href}${data.redirect}?href=${encodeURIComponent(window.location.href)}`;
     }
 
-    document.querySelector("div.semestres").innerHTML = "";
+    document.querySelector('div.semestres').innerHTML = '';
     data.semestres.sort((a, b) => a.semestre_id - b.semestre_id); // Sort semesters by ID (number)
 
     // Fetch the most recent semester (as it's probably the one the user wants to see the most)
-    fetchSemester({ target: { id: data.semestres[data.semestres.length - 1].formsemestre_id } }, data.semestres);
+    fetchSemester(
+        {
+            target: {
+                id: data.semestres[data.semestres.length - 1].formsemestre_id
+            }
+        },
+        data.semestres
+    );
 }
 
 initLocalStorage();
 
 // Get site url
-let siteUrl = "";
-chrome.storage.sync.get('siteUrl').then(function (data) {
+
+// THIS VARIABLE GIVES ME SUICIDAL THOUGHTS
+let siteUrl = '';
+// BECAUSE THE CODE BELOW IS ASYNCHRONOUS
+// SO THERE IS A TIME WHERE THE VARIABLE IS NOT SET
+chrome.storage.sync.get('siteUrl').then(data => {
     siteUrl = data.siteUrl;
 
     // If the user is not on the site, don't do anything. The extension will load on all site but only activate on the one specified in the settings.
     // This is done to enable the user to change the url of the site in the settings. If the site was set in the manifest, it would be impossible to change it.
-    if (document.location.host != siteUrl) {
-        return;
-    }
+    if (document.location.host != siteUrl) return;
 
     // Replaces the original page with the extension's page
-    document.open()
+    document.open();
     document.write(`
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="${chrome.runtime.getURL("bootstrap/bootstrap.min.css")}" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+        <link href="${chrome.runtime.getURL(
+            'bootstrap/bootstrap.min.css'
+        )}" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
         <title>Notes</title>
     </head>
     <body data-bs-theme="dark" class="text-center">
@@ -97,27 +108,27 @@ chrome.storage.sync.get('siteUrl').then(function (data) {
         <div class="auth" style="display: none;"></div>
     </body>
     </html>
-    `)
-    document.close()
+    `);
+    document.close();
 
     // Set theme
-    chrome.storage.sync.get('theme').then(function (data) {
-        document.body.setAttribute('data-bs-theme', data.theme);
-    });
+    chrome.storage.sync.get('theme').then(data => document.body.setAttribute('data-bs-theme', data.theme));
 
     // Add bootstrap script
-    const bootstrapUrl = chrome.runtime.getURL("bootstrap/bootstrap.bundle.min.js");
-    const script = document.createElement("script");
+    const bootstrapUrl = chrome.runtime.getURL('bootstrap/bootstrap.bundle.min.js');
+    const script = document.createElement('script');
     script.src = bootstrapUrl;
     document.body.appendChild(script);
 
     // Add settings link
-    let settingsLink = document.createElement("a");
-    settingsLink.className = "btn btn-primary";
-    settingsLink.href = chrome.runtime.getURL("settings.html");
-    settingsLink.innerText = "Paramètres";
-    document.getElementById("settings_container").appendChild(settingsLink);
+    const settingsLink = document.createElement('a');
+    settingsLink.className = 'btn btn-primary';
+    settingsLink.href = chrome.runtime.getURL('settings.html');
+    settingsLink.innerText = 'Paramètres';
+    document.getElementById('settings_container').appendChild(settingsLink);
 
     // fetch the initial data, which contains the list of semesters (unlike fetchSemester)
-    fetch(`https://${siteUrl}/services/data.php?q=dataPremi%C3%A8reConnexion`).then(response => response.json()).then(data => firstData(data));
+    fetch(`https://${siteUrl}/services/data.php?q=dataPremi%C3%A8reConnexion`)
+        .then(response => response.json())
+        .then(data => firstData(data));
 });
