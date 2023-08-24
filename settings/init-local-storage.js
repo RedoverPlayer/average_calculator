@@ -1,29 +1,29 @@
 // Filling storage values if they are not set yet
 function initLocalStorage() {
     // Site URL
-    setIfNull('siteUrl', 'notes.iut.u-bordeaux.fr')
+    setIfNull('siteUrl', 'notes.iut.u-bordeaux.fr');
 
     // Theme
-    setIfNull('theme', 'dark')
+    setIfNull('theme', 'dark');
 
     // Display categories
-    setIfNull('displayRessources', true)
-    setIfNull('displaySaes', true)
-    setIfNull('displayUes', true)
+    setIfNull('displayRessources', true);
+    setIfNull('displaySaes', true);
+    setIfNull('displayUes', true);
 
     // Default developped categories
-    setIfNull('ressourcesDevelopped', true)
-    setIfNull('saesDevelopped', true)
-    setIfNull('uesDevelopped', false)
-    setIfNull('uesRessourcesDevelopped', false)
+    setIfNull('ressourcesDevelopped', true);
+    setIfNull('saesDevelopped', true);
+    setIfNull('uesDevelopped', false);
+    setIfNull('uesRessourcesDevelopped', false);
 }
 
 function setIfNull(key, value) {
     chrome.storage.sync.get(key).then(data => {
         if (data[key] === undefined) {
-            const obj = {}
-            obj[key] = value
-            chrome.storage.sync.set(obj)
+            const obj = {};
+            obj[key] = value;
+            chrome.storage.sync.set(obj);
         }
-    })
+    });
 }
