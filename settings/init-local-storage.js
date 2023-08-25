@@ -19,9 +19,9 @@ function initLocalStorage() {
 }
 
 function setIfNull(key, value) {
-    chrome.storage.sync.get(key).then((data) => {
+    chrome.storage.sync.get(key).then(data => {
         if (data[key] === undefined) {
-            let obj = {};
+            const obj = {};
             obj[key] = value;
             chrome.storage.sync.set(obj);
         }

@@ -1,10 +1,10 @@
 // Init the settings inputs from storage
 function initSettings() {
-    chrome.storage.sync.get('siteUrl').then(function (data) {
+    chrome.storage.sync.get('siteUrl').then(data => {
         document.getElementById('siteUrl').value = data.siteUrl;
     });
 
-    chrome.storage.sync.get('theme').then(function (data) {
+    chrome.storage.sync.get('theme').then(data => {
         document.getElementById(data.theme).checked = true;
     });
 }
@@ -13,20 +13,23 @@ function initSettings() {
 function initListeners() {
     // Site URL
     document.getElementById('siteUrl').onchange = function () {
-        chrome.storage.sync.set({ 'siteUrl': this.value });
+        chrome.storage.sync.set({ siteUrl: this.value });
     };
-
     // Theme
-    document.getElementById('dark').onchange = function () { chrome.storage.sync.set({ 'theme': 'dark' }); location.reload(); }
-    document.getElementById('light').onchange = function () { chrome.storage.sync.set({ 'theme': 'light' }); location.reload(); }
+    document.getElementById('dark').onchange = () => {
+        chrome.storage.sync.set({ theme: 'dark' });
+        location.reload();
+    };
+    document.getElementById('light').onchange = () => {
+        chrome.storage.sync.set({ theme: 'light' });
+        location.reload();
+    };
 }
 
 // Init other things
 function initSite() {
     // Theme
-    chrome.storage.sync.get('theme').then(function (data) {
-        document.body.setAttribute('data-bs-theme', data.theme);
-    });
+    chrome.storage.sync.get('theme').then(data => document.body.setAttribute('data-bs-theme', data.theme));
 }
 
 initLocalStorage();
