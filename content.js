@@ -9,29 +9,21 @@ function firstData(data) {
 
     // Fetch the most recent semester (as it's probably the one the user wants to see the most)
     fetchSemester(
-        {
-            target: {
-                id: data.semestres[data.semestres.length - 1].formsemestre_id
-            }
-        },
+        {target: {id: data.semestres[data.semestres.length - 1].formsemestre_id}}, 
         data.semestres
     );
 }
 
-initLocalStorage();
-
 // Get site url
-
-// THIS VARIABLE GIVES ME SUICIDAL THOUGHTS
-let siteUrl = '';
-// BECAUSE THE CODE BELOW IS ASYNCHRONOUS
-// SO THERE IS A TIME WHERE THE VARIABLE IS NOT SET
 chrome.storage.sync.get('siteUrl').then(data => {
-    siteUrl = data.siteUrl;
+    let siteUrl = data.siteUrl;
 
     // If the user is not on the site, don't do anything. The extension will load on all site but only activate on the one specified in the settings.
     // This is done to enable the user to change the url of the site in the settings. If the site was set in the manifest, it would be impossible to change it.
     if (document.location.host != siteUrl) return;
+
+    localStorage.setItem('siteUrl', siteUrl);
+    initLocalStorage();
 
     // Replaces the original page with the extension's page
     document.open();
@@ -41,9 +33,7 @@ chrome.storage.sync.get('siteUrl').then(data => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="${chrome.runtime.getURL(
-            'bootstrap/bootstrap.min.css'
-        )}" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+        <link href="${chrome.runtime.getURL('bootstrap/bootstrap.min.css')}" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
         <title>Notes</title>
     </head>
     <body data-bs-theme="dark" class="text-center">
@@ -128,7 +118,7 @@ chrome.storage.sync.get('siteUrl').then(data => {
     document.getElementById('settings_container').appendChild(settingsLink);
 
     // fetch the initial data, which contains the list of semesters (unlike fetchSemester)
-    fetch(`https://${siteUrl}/services/data.php?q=dataPremi%C3%A8reConnexion`)
+    fetch(`https://${siteUrl}/services/data.php?q=dataPremièreConnexion`)
         .then(response => response.json())
         .then(data => firstData(data));
 });

@@ -47,11 +47,8 @@ function displayEvals(evals, ressourceAverage, ressourceUl, ressourceLi, isSAE) 
 
     for (const eval of evals) {
         // Add eval to ressource average
-        const note = eval.note.value;
-        const coef = eval.coef;
-
-        const noteNum = parseFloat(note);
-        const coefNum = parseFloat(coef);
+        const noteNum = parseFloat(eval.note.value);
+        const coefNum = parseFloat(eval.coef);
         if (!isNaN(noteNum) && !isNaN(coefNum)) {
             total += noteNum * coefNum;
             coefTotal += coefNum;
@@ -74,19 +71,15 @@ function displayEvals(evals, ressourceAverage, ressourceUl, ressourceLi, isSAE) 
         evalNote.className = 'd-flex align-items-center gap-2';
 
         // Display badges indicating if the note is the max or min of the promo
-        const maxBadge = `<span class="badge bg-success">Max</span> ${note}`;
-        const minBadge = `<span class="badge bg-danger">Min</span> ${note}`;
-        switch (note) {
+        switch (eval.note.value) {
             case eval.note.max:
-                evalNote.innerHTML = maxBadge;
+                evalNote.innerHTML = `<span class="badge bg-success">Max</span> ${eval.note.value}`;
                 break;
-
             case eval.note.min:
-                evalNote.innerHTML = minBadge;
+                evalNote.innerHTML = `<span class="badge bg-danger">Min</span> ${eval.note.value}`;
                 break;
-
             default:
-                evalNote.innerText = note;
+                evalNote.innerText = eval.note.value;
         }
 
         evalLi.appendChild(evalNote);

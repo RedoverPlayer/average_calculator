@@ -23,7 +23,9 @@ function updateCheck(key) {
 // Setup the event listeners for the settings inputs
 function initListeners() {
     // Site URL
-    document.getElementById('siteUrl').onchange = () => chrome.storage.sync.set({ siteUrl: this.value });
+    document.getElementById('siteUrl').onchange = event => {
+        chrome.storage.sync.set({ 'siteUrl': event.target.value });
+    };
 
     // Theme
     document.getElementById('dark').onchange = () => {
@@ -98,8 +100,7 @@ function semesterSelected(event) {
                 // Load current semester data
                 const semesterID = `semesterUEs${event.target.value}`;
                 chrome.storage.sync.get(semesterID).then(result => {
-                    const ues = result[semesterID];
-                    if (ues === undefined) ues = {};
+                    let ues = result[semesterID] ?? {};
 
                     addRessources(data['relevé']['ressources'], ues);
                     addRessources(data['relevé']['saes'], ues);

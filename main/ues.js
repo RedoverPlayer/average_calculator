@@ -18,10 +18,7 @@ function addToUEs(ressources, uesDisplay) {
 
                 if (ueCoef > 0) {
                     if (!(ueName in uesDisplay)) {
-                        uesDisplay[ueName] = {
-                            ressources: {},
-                            saes: {}
-                        };
+                        uesDisplay[ueName] = { ressources: {}, saes: {} };
                     }
                     if (!(ressourceName in uesDisplay[ueName].ressources)) {
                         uesDisplay[ueName].ressources[ressourceName] = {
@@ -158,7 +155,7 @@ function showUEs(uesDisplay, currentSemesterUEs) {
         ueTitle.innerText = ueName;
         ueContainer.appendChild(ueTitle);
 
-        ueAverage = document.createElement('div');
+        const ueAverage = document.createElement('div');
         ueAverage.innerText = ueData.average;
         ueAverage.style.marginLeft = 'auto';
         ueContainer.appendChild(ueAverage);
@@ -237,19 +234,14 @@ function showUEs(uesDisplay, currentSemesterUEs) {
     uesDiv.appendChild(ueAccordion);
 }
 
-// ALMOST THE SAME AS displayEvals() from main\ressources.js
-// MAYBE MERGE THEM ?
 function displayUEEvals(evals, ressourceUl, ressourceLi, id) {
     let total = 0;
     let coefTotal = 0;
 
     for (const eval of evals) {
         // Add eval to ressource average
-        const note = eval.note.value;
-        const coef = eval.coef;
-
-        const noteNum = parseFloat(note);
-        const coefNum = parseFloat(coef);
+        const noteNum = parseFloat(eval.note.value);
+        const coefNum = parseFloat(eval.coef);
         if (!isNaN(noteNum) && !isNaN(coefNum)) {
             total += noteNum * coefNum;
             coefTotal += coefNum;
@@ -271,21 +263,19 @@ function displayUEEvals(evals, ressourceUl, ressourceLi, id) {
         evalNote.style.marginLeft = 'auto';
         evalNote.style.minWidth = '2.4rem';
         evalNote.className = 'd-flex align-items-center gap-2';
+        
         // Display badges indicating if the note is the max or min of the promo
-
-        const maxBadge = `<span class="badge bg-success">Max</span> ${note}`;
-        const minBadge = `<span class="badge bg-danger">Min</span> ${note}`;
-        switch (note) {
+        switch (eval.note.value) {
             case eval.note.max:
-                evalNote.innerHTML = maxBadge;
+                evalNote.innerHTML = `<span class="badge bg-success">Max</span> ${eval.note.value}`;
                 break;
 
             case eval.note.min:
-                evalNote.innerHTML = minBadge;
+                evalNote.innerHTML = `<span class="badge bg-danger">Min</span> ${eval.note.value}`;
                 break;
 
             default:
-                evalNote.innerText = note;
+                evalNote.innerText = eval.note.value;
         }
 
         evalLi.appendChild(evalNote);

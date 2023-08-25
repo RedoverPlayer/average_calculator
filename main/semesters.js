@@ -1,9 +1,9 @@
 // ---- Semesters ----
 function displaySemester(data, semestres, currentSemesterUEs) {
     updateUEs(data, localStorage.getItem('currentSemester')); // Update the UEs Coefs
-    const { relevé } = data;
-    buildSemesterMenu(relevé.formsemestre_id, semestres, currentSemesterUEs);
-    displaySemesterInfo(relevé);
+    data = data['relevé'];
+    buildSemesterMenu(data.formsemestre_id, semestres, currentSemesterUEs);
+    displaySemesterInfo(data);
 
     async function checkKey(key) {
         const result = await chrome.storage.sync.get(key);
@@ -14,7 +14,7 @@ function displaySemester(data, semestres, currentSemesterUEs) {
         const container = document.getElementById('ressources-container');
         container.style.display = exists ? 'block' : 'none';
         if (exists) {
-            displayRessources(relevé.ressources); // Display the Ressources
+            displayRessources(data.ressources); // Display the Ressources
         }
     });
 
@@ -22,7 +22,7 @@ function displaySemester(data, semestres, currentSemesterUEs) {
         const container = document.getElementById('saes-container');
         container.style.display = exists ? 'block' : 'none';
         if (exists) {
-            displayRessources(relevé.saes, true); // Display the SAEs (Situations d'Apprentissage et d'Evaluation)
+            displayRessources(data.saes, true); // Display the SAEs (Situations d'Apprentissage et d'Evaluation)
         }
     });
 
@@ -30,7 +30,7 @@ function displaySemester(data, semestres, currentSemesterUEs) {
         const container = document.getElementById('ues-container');
         container.style.display = exists ? 'block' : 'none';
         if (exists) {
-            displayUEs(relevé.ressources, relevé.saes, currentSemesterUEs); // Display the UEs (Unités d'Enseignement)
+            displayUEs(data.ressources, data.saes, currentSemesterUEs); // Display the UEs (Unités d'Enseignement)
         }
     });
 
@@ -53,14 +53,13 @@ function displaySemesterInfo(data) {
 // ---- Initial data and other things ----
 function fetchSemester(event, semestres) {
     loading();
-    const { target } = event;
-    const id = target.id === '' ? target.parentElement.id : target.id;
+    const id = event.target.id === '' ? event.target.parentElement.id : event.target.id;
     localStorage.setItem('currentSemester', id);
 
     // Retrieve UEs Coefs
     chrome.storage.sync.get(`semesterUEs${id}`).then(data => {
         const currentSemesterUEs = data[`semesterUEs${id}`];
-        fetch(`https://${siteUrl}/services/data.php?q=relev%C3%A9Etudiant&semestre=${id}`)
+        fetch(`https://${localStorage.getItem('siteUrl')}/services/data.php?q=relevéEtudiant&semestre=${id}`)
             .then(response => response.json())
             .then(data => displaySemester(data, semestres, currentSemesterUEs));
     });
