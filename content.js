@@ -25,6 +25,9 @@ chrome.storage.sync.get('siteUrl').then(data => {
     localStorage.setItem('siteUrl', siteUrl);
     initLocalStorage();
 
+    localStorage.setItem("siteUrl", siteUrl);
+    initLocalStorage();
+
     // Replaces the original page with the extension's page
     document.open();
     document.write(`
