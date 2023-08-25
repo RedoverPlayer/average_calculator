@@ -1,29 +1,33 @@
 // Filling storage values if they are not set yet
-function initLocalStorage() {
+async function initLocalStorage() {
     // Site URL
-    setIfNull('siteUrl', 'notes.iut.u-bordeaux.fr');
+    await setIfNull('siteUrl', 'notes.iut.u-bordeaux.fr');
 
     // Theme
-    setIfNull('theme', 'dark');
+    await setIfNull('theme', 'dark');
 
     // Display categories
-    setIfNull('displayRessources', true);
-    setIfNull('displaySaes', true);
-    setIfNull('displayUes', true);
+    await setIfNull('displayRessources', true);
+    await setIfNull('displaySaes', true);
+    await setIfNull('displayUes', true);
 
     // Default developped categories
-    setIfNull('ressourcesDevelopped', true);
-    setIfNull('saesDevelopped', true);
-    setIfNull('uesDevelopped', false);
-    setIfNull('uesRessourcesDevelopped', false);
+    await setIfNull('ressourcesDevelopped', true);
+    await setIfNull('saesDevelopped', true);
+    await setIfNull('uesDevelopped', false);
+    await setIfNull('uesRessourcesDevelopped', false);
 }
 
-function setIfNull(key, value) {
-    chrome.storage.sync.get(key).then(data => {
-        if (data[key] === undefined) {
-            const obj = {};
-            obj[key] = value;
-            chrome.storage.sync.set(obj);
-        }
+async function setIfNull(key, value) {
+    return new Promise((resolve, reject) => {
+        chrome.storage.sync.get(key).then(data => {
+            if (data[key] === undefined) {
+                const obj = {};
+                obj[key] = value;
+                chrome.storage.sync.set(obj, () => resolve());
+            } else {
+                resolve();
+            }
+        });
     });
 }

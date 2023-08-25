@@ -32,7 +32,8 @@ function initSite() {
     chrome.storage.sync.get('theme').then(data => document.body.setAttribute('data-bs-theme', data.theme));
 }
 
-initLocalStorage();
-setTimeout(initSettings, 100);
-setTimeout(initListeners, 100);
-setTimeout(initSite, 100);
+initLocalStorage().then(() => {
+    initSettings();
+    initListeners();
+    initSite();
+});

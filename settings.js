@@ -196,11 +196,12 @@ function initSite() {
     chrome.storage.sync.get('theme').then(data => document.body.setAttribute('data-bs-theme', data.theme));
 }
 
-initLocalStorage();
-setTimeout(initSettings, 100);
-setTimeout(initListeners, 100);
-setTimeout(initSite, 100);
-
-// Site url
 let siteUrl;
-chrome.storage.sync.get('siteUrl').then(data => (siteUrl = data.siteUrl));
+initLocalStorage().then(() => {
+    initSettings();
+    initListeners();
+    initSite();
+
+    // Site url
+    chrome.storage.sync.get('siteUrl').then(data => (siteUrl = data.siteUrl));
+});
