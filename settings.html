@@ -42,9 +42,6 @@
               <input type="radio" class="btn-check" name="themeSelector" id="light" autocomplete="off" value="light">
               <label class="btn btn-outline-primary" for="light">Clair</label>
           </div><br><br>
-          
-
-
 
 
           <h6>Affichage des catégories</h6>
@@ -62,6 +59,60 @@
               <input class="form-check-input" type="checkbox" role="switch" id="displayUes" checked>
               <label class="form-check-label" for="displayUes">Afficher les UEs</label>
           </div><br><br>
+
+
+          <h6>Epaisseur des lignes</h6>
+          <div class="ms-2">
+            <label for="ressourcePaddingRange" class="form-label">Ressources</label><br>
+            <input type="range" style="max-width: 20rem;" class="form-range" min="0" max="4" value="2" id="ressourcePaddingRange"><br>
+            <label for="evalPaddingRange" class="form-label">Evaluations</label><br>
+            <input type="range" style="max-width: 20rem;" class="form-range" min="0" max="4" value="1" id="evalPaddingRange">
+          </div>
+          <h6>Espacement entre les ressources</h6>
+          <div class="ms-2">
+            <input type="range" style="max-width: 20rem;" class="form-range" min="0" max="5" value="2" id="ressourceGapRange">
+          </div>
+
+          <!-- Exemple of what it the settings will look like -->
+          <div id="ressourceExample" class="d-flex flex-column gap-2">
+            <ul class="list-group">
+              <button id="ressourcePaddingExample" class="list-group-item bg-success d-flex justify-content-between text-light">
+                  <div>R4.01 - Ressource</div>
+                  <div>15.06</div>
+              </button>
+              <li id="evalPaddingExample" class="list-group-item d-flex gap-5 pt-1 pb-1 pl-2 pr-2" title="Min. 06.00, Max 18.00">
+                  <div>Eval Exemple 1</div>
+                  <div class="d-flex align-items-center gap-2" style="margin-left: auto; min-width: 2.4rem;">14.47</div>
+                  <div class="text-secondary d-flex align-items-center" style="min-width: 4.9rem;">Moy. 14.62</div>
+                  <div class="text-secondary d-flex align-items-center" style="min-width: 5rem;">Coef. 00.50</div>
+              </li>
+              <li id="evalPaddingExample" class="list-group-item d-flex gap-5 pt-1 pb-1 pl-2 pr-2" title="Min. 04.00, Max 18.00">
+                  <div>TD Exemple</div>
+                  <div class="d-flex align-items-center gap-2" style="margin-left: auto; min-width: 2.4rem;">08.72</div>
+                  <div class="text-secondary d-flex align-items-center" style="min-width: 4.9rem;">Moy. 11.94</div>
+                  <div class="text-secondary d-flex align-items-center" style="min-width: 5rem;">Coef. 00.50</div>
+              </li>
+              <li id="evalPaddingExample" class="list-group-item d-flex gap-5 pt-1 pb-1 pl-2 pr-2" title="Min. 00.00, Max 20.00">
+                  <div>Eval Exemple 2</div>
+                  <div class="d-flex align-items-center gap-2" style="margin-left: auto; min-width: 2.4rem;">16.00</div>
+                  <div class="text-secondary d-flex align-items-center" style="min-width: 4.9rem;">Moy. 12.34</div>
+                  <div class="text-secondary d-flex align-items-center" style="min-width: 5rem;">Coef. 01.00</div>
+              </li>
+              <li id="evalPaddingExample" class="list-group-item d-flex gap-5 pt-1 pb-1 pl-2 pr-2" title="Min. 02.00, Max 20.00">
+                  <div>DS Exemple</div>
+                  <div class="d-flex align-items-center gap-2" style="margin-left: auto; min-width: 2.4rem;">16.32</div>
+                  <div class="text-secondary d-flex align-items-center" style="min-width: 4.9rem;">Moy. 11.24</div>
+                  <div class="text-secondary d-flex align-items-center" style="min-width: 5rem;">Coef. 02.00</div>
+              </li>
+            </ul>
+            <ul class="list-group">
+              <button id="ressourcePaddingExample" class="list-group-item bg-success d-flex justify-content-between text-light">
+                  <div>R4.02 - Ressource</div>
+                  <div>15.06</div>
+              </button>
+            </ul>
+          </div>
+          <br><br>
 
 
 

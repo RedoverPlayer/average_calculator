@@ -5,7 +5,7 @@ function firstData(data) {
     }
 
     document.querySelector('div.semestres').innerHTML = '';
-    data.semestres.sort((a, b) => a.semestre_id - b.semestre_id); // Sort semesters by ID (number)
+    data.semestres.sort((a, b) => a.semestre_id - b.semestre_id); // Sort semesters by ID (number)e
 
     // Fetch the most recent semester (as it's probably the one the user wants to see the most)
     fetchSemester(
@@ -14,16 +14,16 @@ function firstData(data) {
     );
 }
 
-// Get site url
-chrome.storage.sync.get('siteUrl').then(data => {
-    let siteUrl = data.siteUrl;
+async function main() {
+    const { siteUrl } = await chrome.storage.sync.get('siteUrl')
 
     // If the user is not on the site, don't do anything. The extension will load on all site but only activate on the one specified in the settings.
     // This is done to enable the user to change the url of the site in the settings. If the site was set in the manifest, it would be impossible to change it.
     if (document.location.host != siteUrl) return;
 
     localStorage.setItem("siteUrl", siteUrl);
-    initLocalStorage().then(() => {
+
+    initLocalStorage().then(async () => {
         // Replaces the original page with the extension's page
         document.open();
         document.write(`
@@ -116,9 +116,17 @@ chrome.storage.sync.get('siteUrl').then(data => {
         settingsLink.innerText = 'Paramètres';
         document.getElementById('settings_container').appendChild(settingsLink);
 
+        // Set flex gap from settings
+        const { ressourceGap } = await chrome.storage.sync.get('ressourceGap');
+        ["ressources", "saes", "ues"].forEach(elem => {
+            document.getElementById(elem).className = `d-flex flex-column gap-${ressourceGap}`;
+        });
+
         // fetch the initial data, which contains the list of semesters (unlike fetchSemester)
         fetch(`https://${siteUrl}/services/data.php?q=dataPremièreConnexion`)
             .then(response => response.json())
             .then(data => firstData(data));
     });
-});
+}
+
+main()

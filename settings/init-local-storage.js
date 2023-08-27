@@ -11,6 +11,11 @@ async function initLocalStorage() {
     await setIfNull('displaySaes', true);
     await setIfNull('displayUes', true);
 
+    // Eval padding range
+    await setIfNull('ressourcePadding', 2);
+    await setIfNull('evalPadding', 1);
+    await setIfNull('ressourceGap', 2);
+
     // Default developped categories
     await setIfNull('ressourcesDevelopped', true);
     await setIfNull('saesDevelopped', true);
