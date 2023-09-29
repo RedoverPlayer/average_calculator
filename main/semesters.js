@@ -2,6 +2,7 @@
 function displaySemester(data, semestres, currentSemesterUEs) {
     updateUEs(data, localStorage.getItem('currentSemester')); // Update the UEs Coefs
     data = data['relevé'];
+    if (!data?.formsemestre_id) { location.reload(); return; }
     buildSemesterMenu(data.formsemestre_id, semestres, currentSemesterUEs);
     displaySemesterInfo(data);
 
