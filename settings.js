@@ -48,19 +48,19 @@ function initListeners() {
     checkUpdateListener('displayUes');
 
     // Padding and gap
-    document.getElementById('ressourcePaddingRange').onchange = event => {
+    document.getElementById('ressourcePaddingRange').oninput = event => {
         chrome.storage.sync.set({ ressourcePadding: event.target.value });
         document.querySelectorAll('button#ressourcePaddingExample').forEach(element => {
             element.className = `list-group-item bg-success d-flex justify-content-between text-light pt-${event.target.value} pb-${event.target.value}`
         })
     };
-    document.getElementById('evalPaddingRange').onchange = event => {
+    document.getElementById('evalPaddingRange').oninput = event => {
         chrome.storage.sync.set({ evalPadding: event.target.value });
         document.querySelectorAll('li#evalPaddingExample').forEach(element => {
             element.className = `list-group-item d-flex gap-5 pt-${event.target.value} pb-${event.target.value} pl-2 pr-2`
         });
     };
-    document.getElementById('ressourceGapRange').onchange = event => {
+    document.getElementById('ressourceGapRange').oninput = event => {
         chrome.storage.sync.set({ ressourceGap: event.target.value });
         document.querySelector('div#ressourceExample').className = `d-flex flex-column gap-${event.target.value}`
     };
