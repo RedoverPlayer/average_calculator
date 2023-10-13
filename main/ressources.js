@@ -1,5 +1,5 @@
 // ---- Ressources & SAEs ----
-function displayRessources(ressources, isSAE = false) {
+async function displayRessources(ressources, isSAE = false) {
     const ressourcesDiv = document.getElementById('ressources');
     const saesDiv = document.getElementById('saes');
 
@@ -9,13 +9,15 @@ function displayRessources(ressources, isSAE = false) {
         ressourcesDiv.innerHTML = '';
     }
 
+    const { ressourcePadding } = await chrome.storage.sync.get('ressourcePadding');
+
     for (const ressource of Object.entries(ressources)) {
         const ressourceUl = document.createElement('ul');
         ressourceUl.className = 'list-group';
 
         // Ressource title
         const ressourceLi = document.createElement('button');
-        ressourceLi.className = 'list-group-item bg-success d-flex justify-content-between text-light';
+        ressourceLi.className = `list-group-item bg-success d-flex justify-content-between text-light pt-${ressourcePadding} pb-${ressourcePadding}`;
         ressourceLi.onclick = event => {
             toggleEvals(event);
         };
@@ -41,9 +43,11 @@ function displayRessources(ressources, isSAE = false) {
     }
 }
 
-function displayEvals(evals, ressourceAverage, ressourceUl, ressourceLi, isSAE) {
+async function displayEvals(evals, ressourceAverage, ressourceUl, ressourceLi, isSAE) {
     let total = 0;
     let coefTotal = 0;
+
+    const { evalPadding } = await chrome.storage.sync.get('evalPadding');
 
     for (const eval of evals) {
         // Add eval to ressource average
@@ -56,7 +60,7 @@ function displayEvals(evals, ressourceAverage, ressourceUl, ressourceLi, isSAE) 
 
         // Create eval elem
         const evalLi = document.createElement('li');
-        evalLi.className = 'list-group-item d-flex gap-5 pt-1 pb-1 pl-2 pr-2';
+        evalLi.className = `list-group-item d-flex gap-5 pt-${evalPadding} pb-${evalPadding} pl-2 pr-2`;
         evalLi.title = `Min. ${eval.note.min}, Max ${eval.note.max}`;
 
         // Eval title

@@ -4,8 +4,8 @@ function updateUEs(data, currentSemester) {
     chrome.storage.sync.get(semesterID).then(result => {
         let ues = result[semesterID] ?? {};
 
-        addRessources(data['relevé']['ressources'], ues);
-        addRessources(data['relevé']['saes'], ues);
+        addRessources(data['ressources'], ues);
+        addRessources(data['saes'], ues);
 
         const obj = {};
         obj[semesterID] = ues;

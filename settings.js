@@ -9,6 +9,11 @@ function initSettings() {
     updateCheck('displaySaes');
     updateCheck('displayUes');
 
+    // Padding and gap
+    chrome.storage.sync.get('ressourcePadding').then(data => { document.getElementById('ressourcePaddingRange').value = data.ressourcePadding });
+    chrome.storage.sync.get('evalPadding').then(data => { document.getElementById('evalPaddingRange').value = data.evalPadding });
+    chrome.storage.sync.get('ressourceGap').then(data => { document.getElementById('ressourceGapRange').value = data.ressourceGap });
+
     // Default developped categories
     updateCheck('ressourcesDevelopped');
     updateCheck('saesDevelopped');
@@ -41,6 +46,24 @@ function initListeners() {
     checkUpdateListener('displayRessources');
     checkUpdateListener('displaySaes');
     checkUpdateListener('displayUes');
+
+    // Padding and gap
+    document.getElementById('ressourcePaddingRange').oninput = event => {
+        chrome.storage.sync.set({ ressourcePadding: event.target.value });
+        document.querySelectorAll('button#ressourcePaddingExample').forEach(element => {
+            element.className = `list-group-item bg-success d-flex justify-content-between text-light pt-${event.target.value} pb-${event.target.value}`
+        })
+    };
+    document.getElementById('evalPaddingRange').oninput = event => {
+        chrome.storage.sync.set({ evalPadding: event.target.value });
+        document.querySelectorAll('li#evalPaddingExample').forEach(element => {
+            element.className = `list-group-item d-flex gap-5 pt-${event.target.value} pb-${event.target.value} pl-2 pr-2`
+        });
+    };
+    document.getElementById('ressourceGapRange').oninput = event => {
+        chrome.storage.sync.set({ ressourceGap: event.target.value });
+        document.querySelector('div#ressourceExample').className = `d-flex flex-column gap-${event.target.value}`
+    };
 
     // Default developped categories
     checkUpdateListener('ressourcesDevelopped');
@@ -194,6 +217,21 @@ function checkUpdateListener(key) {
 function initSite() {
     // Theme
     chrome.storage.sync.get('theme').then(data => document.body.setAttribute('data-bs-theme', data.theme));
+
+    // Padding and gap
+    chrome.storage.sync.get('ressourcePadding').then(data => {
+        document.querySelector('button#ressourcePaddingExample').className = `list-group-item bg-success d-flex justify-content-between text-light pt-${data.ressourcePadding} pb-${data.ressourcePadding}`
+    });
+
+    chrome.storage.sync.get('evalPadding').then(data => {
+        document.querySelectorAll('li#evalPaddingExample').forEach(element => {
+            element.className = `list-group-item d-flex gap-5 pt-${data.evalPadding} pb-${data.evalPadding} pl-2 pr-2`
+        });
+    });
+
+    chrome.storage.sync.get('ressourceGap').then(data => {
+        document.querySelector('div#ressourceExample').className = `d-flex flex-column gap-${data.ressourceGap}`
+    });
 }
 
 let siteUrl;
