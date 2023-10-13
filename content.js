@@ -1,7 +1,8 @@
 function firstData(data) {
     // If the user is not logged in, redirect to the CAS login page
-    if ('redirect' in data || !data.semestres || !data) {
+    if ('redirect' in data || data.semestres == undefined || !data || !data.semestres) {
         window.location.href = `${window.location.href}${data.redirect}?href=${encodeURIComponent(window.location.href)}`;
+        return;
     }
 
     document.querySelector('div.semestres').innerHTML = '';
