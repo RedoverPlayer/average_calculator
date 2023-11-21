@@ -33,7 +33,7 @@ async function main() {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link href="${chrome.runtime.getURL('bootstrap/bootstrap.min.css')}" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+            <link href="${chrome.runtime.getURL('bootstrap/bootstrap.min.css')}" rel="stylesheet" crossorigin="anonymous">
             <title>Notes</title>
         </head>
         <body data-bs-theme="dark" class="text-center">
