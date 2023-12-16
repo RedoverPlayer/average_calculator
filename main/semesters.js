@@ -48,7 +48,11 @@ function displaySemesterInfo(data) {
     document.getElementById('moyPromo').innerHTML = `<span class="badge bg-secondary">Moy</span> ${notes.moy}`;
     document.getElementById('maxPromo').innerHTML = `<span class="badge bg-success">Max</span> ${notes.max}`;
     document.getElementById('rank').innerText = `${rang.value}/${rang.total}`;
-    document.getElementById('ects').innerText = `${ECTS.acquis}/${ECTS.total}`;
+    try {
+        document.getElementById('ects').innerText = `${ECTS.acquis}/${ECTS.total}`;
+    } catch (e) {
+        document.getElementById('ects').innerText = `--/--`;
+    }
 }
 
 // ---- Initial data and other things ----
