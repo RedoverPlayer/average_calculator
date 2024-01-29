@@ -58,16 +58,20 @@ function calculateUEsAverages(uesDisplay, currentSemesterUEs) {
 
                 for (const evaluation of ressourceData.evaluations) {
                     const { note, ressourceCoef, UECoef } = evaluation;
-                    notes += note.value * ressourceCoef * UECoef;
-                    coefs += ressourceCoef * UECoef;
+                    if (!isNaN(note.value)) {
+                        notes += note.value * ressourceCoef * UECoef;
+                        coefs += ressourceCoef * UECoef;
+                    }
                 }
 
                 const average = (notes / coefs).toFixed(2);
                 ressourceData.average = average;
 
                 const ressourceWeight = currentSemesterUEs[ueName].ressources[ressourceName].weight;
-                UEnotes += average * ressourceWeight;
-                UEcoefs += ressourceWeight;
+                if (!isNaN(average) && !isNaN(ressourceWeight)) {
+                    UEnotes += average * ressourceWeight;
+                    UEcoefs += ressourceWeight;
+                }
             }
 
             const average = (UEnotes / UEcoefs).toFixed(2);
