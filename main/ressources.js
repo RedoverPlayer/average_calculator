@@ -75,9 +75,9 @@ async function displayEvals(evals, ressourceAverage, ressourceUl, ressourceLi, i
         evalNote.className = 'd-flex align-items-center gap-2';
 
         // Display badges indicating if the note is the max or min of the promo
-        if (eval.note.value >= eval.note.max && eval.note.value !== '~' && eval.note.value !== 'EXC') {
+        if (eval.note.value >= eval.note.max && !["~", "EXC", "ABS", "ATT"].includes(eval.note.value)) {
             evalNote.innerHTML = `<span class="badge bg-success">Max</span> ${eval.note.value}`;
-        } else if (eval.note.value <= eval.note.min && eval.note.value !== '~' && eval.note.value !== 'EXC') {
+        } else if (eval.note.value <= eval.note.min && !["~", "EXC", "ABS", "ATT"].includes(eval.note.value)) {
             evalNote.innerHTML = `<span class="badge bg-danger">Min</span> ${eval.note.value}`;
         } else {
             evalNote.innerText = eval.note.value;
