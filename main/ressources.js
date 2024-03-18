@@ -32,7 +32,7 @@ async function displayRessources(ressources, isSAE = false) {
         ressourceLi.appendChild(ressourceAverage);
         ressourceUl.appendChild(ressourceLi);
 
-        displayEvals(ressource[1].evaluations, ressourceAverage, ressourceUl, ressourceLi, isSAE);
+        displayEvals(ressource[1].evaluations, ressourceAverage, ressourceUl, ressourceLi, isSAE, ressource[0], ressource[1].titre);
 
         // Add ressource to DOM
         if (isSAE) {
@@ -43,7 +43,7 @@ async function displayRessources(ressources, isSAE = false) {
     }
 }
 
-async function displayEvals(evals, ressourceAverage, ressourceUl, ressourceLi, isSAE) {
+async function displayEvals(evals, ressourceAverage, ressourceUl, ressourceLi, isSAE, ressourceCode, ressourceTitle) {
     let total = 0;
     let coefTotal = 0;
 
@@ -106,6 +106,13 @@ async function displayEvals(evals, ressourceAverage, ressourceUl, ressourceLi, i
                 evalLi.style.setProperty('display', 'none', 'important');
             }
         });
+
+        // Notes repartition
+        evalLi.style.cursor = 'pointer';
+        evalLi.onclick = event => {
+            fetchNoteData(eval, ressourceCode, ressourceTitle);
+            document.getElementById('popup-bg').style.display = 'block';
+        };
 
         ressourceUl.appendChild(evalLi);
     }

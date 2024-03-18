@@ -48,6 +48,41 @@ async function main() {
             <div id="loading" class="spinner-grow" style="position:absolute; top: 1rem; left: 49%;" role="status"></div>
             </nav>
 
+            <div id="popup-bg" class="position-fixed top-50 start-50 translate-middle rounded-md shadow-sm w-100 h-100" style="background-color: rgba(20, 20, 20, 0.5); backdrop-filter: blur(4px); display: none; z-index: 124;">
+                <div id="popup-content" class="d-flex flex-column gap-2 position-absolute top-50 start-50 translate-middle p-4 rounded z-2" style="background-color: rgb(40, 40, 40);">
+                    <div>
+                        <h4 id="notesrepar-title"></h4>
+                        <div id="notesrepar-description" class="text-secondary"></div>
+                    </div>
+                    
+                    <div id="notesrepar-data" class="d-flex flex-row gap-2 align-items-end">
+                        <div style="width: 1rem; height: 7rem; background-color: #7171f4;"></div>
+                        <div style="width: 1rem; height: 11rem; background-color: #7171f4;"></div>
+                    </div>
+                    <div id="notesrepar-index" class="d-flex flex-row gap-2">
+                        <div style="width: 1rem;">0</div>
+                        <div style="width: 1rem;">1</div>
+                    </div>
+
+                    <div class="d-flex justify-content-center d-flex flex-column mx-auto" style="width: 7rem">
+                        <div class="text-white d-flex flex-row justify-content-between"><div>Note : </div><div id="notesrepar-note"></div></div>
+                        <div class="text-white d-flex flex-row justify-content-between"><div>Rang : </div><div id="notesrepar-position"></div></div>
+                    </div>
+
+                    <div>
+                        <div class="d-flex gap-2 m-auto mb-2 mt-2 justify-content-center gap-2">
+                            <div title="Minimum promo" class="d-flex flex-row align-items-center gap-1"><span class="badge bg-danger">Min</span><div id="notesrepar-min"> --.--</div></div>
+                            <div>
+                                <div title="Mediane promo" class="d-flex flex-row align-items-center gap-1"><span class="badge bg-secondary">Med</span><div id="notesrepar-med"> --.--</div></div>
+                                <div title="Moyenne promo" class="d-flex flex-row align-items-center gap-1"><span class="badge bg-secondary">Moy</span><div id="notesrepar-moy"> --.--</div></div>
+                            </div>
+                            <div title="Maximum promo" class="d-flex flex-row align-items-center gap-1"><span class="badge bg-success">Max</span><div id="notesrepar-max"> --.--</div></div>
+                        </div>
+                        <div id="notesrepar-coef">0</div>
+                    </div>
+                </div>
+            </div>
+
             <div class="semestres btn-group m-4" role="group"></div>
 
             <div class="card text-start m-auto" style="width: 90%; max-width: 60rem; min-width: 35rem;">
@@ -122,6 +157,15 @@ async function main() {
         ["ressources", "saes", "ues"].forEach(elem => {
             document.getElementById(elem).className = `d-flex flex-column gap-${ressourceGap}`;
         });
+
+        // Setup notes repartition popup
+        const popup_bg = document.getElementById('popup-bg');
+        popup_bg.addEventListener('click', () => {
+            document.getElementById('popup-bg').style.display = 'none';
+        });
+        popup_bg.style.cursor = 'pointer';
+        document.getElementById('popup-content').addEventListener('click', e => e.stopPropagation());
+        document.getElementById('popup-content').style.cursor = 'default';
 
         // fetch the initial data, which contains the list of semesters (unlike fetchSemester)
         fetch(`https://${siteUrl}/services/data.php?q=dataPremièreConnexion`)

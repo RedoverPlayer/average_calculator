@@ -1,6 +1,6 @@
 {
   "name": "IUT Average Mark Calculator",
-  "version": "4.1.4",
+  "version": "4.2.0",
   "manifest_version": 3,
   "description": "Calcule vos moyennes de ressources ainsi que les UEs en proposant une interface moderne et personnalisable.",
   "content_scripts": [
