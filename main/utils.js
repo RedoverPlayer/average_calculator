@@ -118,10 +118,10 @@ function displayNotesData(data, eval, ressourceCode, ressourceTitle) {
         noteDiv.style.width = '1.1rem';
         noteDiv.style.height = `${noteNum * heightUnit}rem`;
 
-        if (currNote > 10) {
+        if (currNote >= 10) {
             noteDiv.style.backgroundColor = '#7171f4';
             noteDiv.style.backgroundColor = 'rgb(25, 135, 84)';
-        } else if (currNote > 8) {
+        } else if (currNote >= 8) {
             noteDiv.style.backgroundColor = 'rgb(182, 117, 0)';
         } else {
             noteDiv.style.backgroundColor = 'rgb(180, 0, 0)';

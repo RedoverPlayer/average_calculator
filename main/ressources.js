@@ -61,7 +61,7 @@ async function displayEvals(evals, ressourceAverage, ressourceUl, ressourceLi, i
         // Create eval elem
         const evalLi = document.createElement('li');
         evalLi.className = `list-group-item d-flex gap-5 pt-${evalPadding} pb-${evalPadding} pl-2 pr-2`;
-        evalLi.title = `Min. ${eval.note.min}, Max ${eval.note.max}`;
+        evalLi.title = `Min. ${eval.note.min}, Max ${eval.note.max} - Cliquer pour voir plus`;
 
         // Eval title
         const evalTitle = document.createElement('div');
