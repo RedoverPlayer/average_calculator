@@ -91,7 +91,6 @@ function displayNotesData(data, eval, ressourceCode, ressourceTitle) {
 
     // Calculate median of notes
     data.sort((a, b) => parseFloat(a) - parseFloat(b));
-    console.log(data);
     let median = 0;
     if (data.length % 2 === 0) {
         median = (data[data.length / 2] + data[data.length / 2 + 1]) / 2;
