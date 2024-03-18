@@ -20,17 +20,6 @@ function fetchNoteData(eval, ressourceCode, ressourceTitle) {
         });
 }
 
-const test = `
-<div id="notesrepar-data" class="d-flex flex-row gap-2 align-items-end">
-    <div style="width: 1rem; height: 7rem; background-color: #7171f4;"></div>
-    <div style="width: 1rem; height: 11rem; background-color: #7171f4;"></div>
-</div>
-<div id="notesrepar-index" class="d-flex flex-row gap-2">
-    <div style="width: 1rem;">0</div>
-    <div style="width: 1rem;">1</div>
-</div>
-`
-
 function displayNotesData(data, eval, ressourceCode, ressourceTitle) {
     const notesReparTitle = document.getElementById('notesrepar-title');
     const notesReparDescription = document.getElementById('notesrepar-description');
