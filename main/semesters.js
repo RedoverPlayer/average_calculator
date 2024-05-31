@@ -42,7 +42,11 @@ function displaySemester(data, semestres, currentSemesterUEs) {
 function displaySemesterInfo(data) {
     const { semestre } = data;
     const { notes, rang, ECTS } = semestre;
-    document.getElementById('semester_title').innerText = `Semestre ${semestre.numero} - ${semestre.groupes[0].group_name}`;
+    if (semestre.groupes.length > 0) {
+        document.getElementById('semester_title').innerText = `Semestre ${semestre.numero} - ${semestre.groupes[0]?.group_name}`;
+    } else {
+        document.getElementById('semester_title').innerText = `Semestre ${semestre.numero}`;
+    }
     document.getElementById('average').innerText = `${notes.value}`;
     document.getElementById('minPromo').innerHTML = `<span class="badge bg-danger">Min</span> ${notes.min}`;
     document.getElementById('moyPromo').innerHTML = `<span class="badge bg-secondary">Moy</span> ${notes.moy}`;

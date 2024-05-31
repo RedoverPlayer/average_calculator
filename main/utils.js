@@ -57,6 +57,13 @@ function displayNotesData(data, eval, ressourceCode, ressourceTitle) {
     }
 
     if (!data) return
+    
+    const newData = [];
+    for (const note of data) {
+        if (isNaN(parseFloat(note))) continue;
+        newData.push(parseFloat(note.toFixed(2)));
+    }
+    data = newData;
 
     notesReparTitle.innerText = eval.description;
     notesReparDescription.innerText = ressourceCode + ' - ' + ressourceTitle;
@@ -79,19 +86,36 @@ function displayNotesData(data, eval, ressourceCode, ressourceTitle) {
     }
 
     // Calculate median of notes
-    data.sort((a, b) => parseFloat(a) - parseFloat(b));
-    let median = 0;
-    if (data.length % 2 === 0) {
-        median = (data[data.length / 2] + data[data.length / 2 + 1]) / 2;
-    } else {
-        median = data[Math.floor(data.length / 2)];
+    data.sort((a, b) => a - b);
+    
+    let median = 0.0;
+    if (data.length > 0) {
+        if (data.length % 2 === 0) {
+            median = (data[data.length / 2] + data[data.length / 2 + 1]) / 2;
+        } else {
+            median = data[Math.floor(data.length / 2)];
+        }
     }
 
     // Calculate position of user's note
-    const position = data.length - (data.indexOf(parseFloat(eval.note.value)));
+    const lastPosition = data.length - (data.indexOf(parseFloat(eval.note.value)));
+    const firstPosition = data.length - (data.lastIndexOf(parseFloat(eval.note.value)));
 
     notesReparNote.innerHTML = `${eval.note.value}`;
-    notesReparPosition.innerHTML = `${position}/${data.length}`;
+    if (lastPosition === firstPosition) {
+        notesReparPosition.innerHTML = `${firstPosition}/${data.length}`;
+    } else {
+        notesReparPosition.innerHTML = `${firstPosition}-${lastPosition}/${data.length}`;
+    }
+
+    // Display user position bar
+    const notesReparRangeSuperior = document.getElementById('notesrepar-range-superior');
+    const notesReparRangeCurrent = document.getElementById('notesrepar-range-current');
+    const notesReparRangeInferior = document.getElementById('notesrepar-range-inferior');
+
+    notesReparRangeSuperior.style.width = `${(firstPosition - 1) / data.length * 100}%`;
+    notesReparRangeCurrent.style.width = `${(lastPosition - firstPosition + 1) / data.length * 100}%`;
+    notesReparRangeInferior.style.width = `${(data.length - lastPosition) / data.length * 100}%`;
 
     median = median.toFixed(2);
     notesReparMed.innerHTML = ` ${median.padStart(5, '0')}`;

@@ -64,9 +64,18 @@ async function main() {
                         <div style="width: 1rem;">1</div>
                     </div>
 
-                    <div class="d-flex justify-content-center d-flex flex-column mx-auto" style="width: 7rem">
-                        <div class="text-white d-flex flex-row justify-content-between"><div>Note : </div><div id="notesrepar-note"></div></div>
-                        <div class="text-white d-flex flex-row justify-content-between"><div>Rang : </div><div id="notesrepar-position"></div></div>
+                    <div class="d-flex justify-content-center d-flex flex-column mx-auto" style="width: 15rem">
+                        <div class="d-flex justify-content-center d-flex flex-column mx-auto" style="width: 7rem">
+                            <div class="text-white d-flex flex-row justify-content-between"><div>Note : </div><div id="notesrepar-note"></div></div>
+                            <div class="text-white d-flex flex-row justify-content-between"><div>Rang : </div><div id="notesrepar-position"></div></div>
+                        </div>
+                        <div class="d-flex flex-row mt-1 align-items-center" style="height: 1rem">
+                            <div class="me-1">1er</div>
+                            <div id="notesrepar-range-superior" style="height: 1rem; background-color: rgb(25, 200, 200)"></div>
+                            <div id="notesrepar-range-current" style="height: 1rem; background-color: rgb(25, 135, 84)"></div>
+                            <div id="notesrepar-range-inferior" style="height: 1rem; background-color: rgb(25, 200, 200)"></div>
+                            <div class="ms-1">Dernier</div>
+                        </div>
                     </div>
 
                     <div>
